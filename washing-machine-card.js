@@ -83,6 +83,19 @@ class WashingMachineCard extends HTMLElement {
       tip_notify: "Notification de fin", tip_plug: "Prise machine", tip_history: "Historique",
       locale: "fr-FR", decimal: ",",
     },
+    nl: {
+      name: "Wasmachine",
+      badge_running: "BEZIG", badge_idle: "INACTIEF", badge_nodata: "GEEN DATA",
+      state_running: "Wassen", state_idle: "Inactief", state_nodata: "Geen data",
+      ring_running: "VERSTREKEN", ring_idle: "INACTIEF",
+      power: "Huidig vermogen", current: "Huidig verbruik",
+      last_cycle: "LAATSTE CYCLUS", start: "START", duration: "DUUR",
+      energy: "ENERGIE", cost: "KOSTEN",
+      min: "min", kwh: "kWh", kw: "kW",
+      today: "Vandaag", yesterday: "Gisteren",
+      tip_notify: "Melding bij klaar", tip_plug: "Stekker wasmachine", tip_history: "Geschiedenis",
+      locale: "nl-NL", decimal: ",",
+    },
   };
 
   static DEFAULTS = {
@@ -91,6 +104,7 @@ class WashingMachineCard extends HTMLElement {
       "стирка", "washing", "running", "run", "wash", "on", "spin", "отжим", "полоскание", "rinse",
       "waschen", "läuft", "schleudern", "spülen", "trocknen",
       "lavage", "en cours", "essorage", "rincage", "rinçage",
+      "wassen", "loopt", "centrifugeren", "spoelen", "drogen",
     ],
     power_threshold: 10,  // above this the machine counts as running (if power_entity is set)
     power_max: 2500,      // gauge maximum, in power_entity units
