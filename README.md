@@ -50,6 +50,7 @@ last_wash_entity: input_datetime.wm_last_start     # cycle start timestamp
 duration_entity: input_number.wm_last_duration     # cycle duration, minutes
 energy_entity: input_number.wm_last_energy         # kWh per cycle
 cost_entity: input_number.wm_last_cost             # cost per cycle
+hide_status_panel: true                            # hide status panel only when idle
 currency: "€"
 language: en                                       # en / ru / de / fr (default: HA language)
 ```
@@ -69,6 +70,7 @@ language: en                                       # en / ru / de / fr (default:
 | `cost_entity` | no | — | Cost per cycle. |
 | `currency` | no | `€` | Currency symbol for the cost column. |
 | `running_states` | no | on, washing, run, spin, rinse, … | States of `status_entity` treated as "running" (English, Russian, German and French states are recognised). |
+| `running_states` | no | false | Hide status panel only when idle. |
 | `language` | no | HA language | `en`, `ru`, `de` or `fr`. |
 
 ## 🧠 How it works with a dumb machine
