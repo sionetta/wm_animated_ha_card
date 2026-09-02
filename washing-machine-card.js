@@ -193,7 +193,26 @@ class WashingMachineCard extends HTMLElement {
     };
   }
 
+  // Ширина карточки отслеживается наблюдателем, а не container queries:
+  // container-type: inline-size создаёт containment, из-за которого в мобильном
+  // приложении Home Assistant возникает лишний пересчёт раскладки и «отскок»
+  // прокрутки. Наблюдаем внешний размер элемента — он задаётся сеткой дашборда,
+  // поэтому смена классов внутри не может вызвать цикл наблюдения.
+  _observeWidth() {
+    if (this._ro || typeof ResizeObserver === "undefined") return;
+    this._ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect?.width;
+      if (!w || !this._built) return;
+      const wrap = this._el("wrap");
+      if (!wrap) return;
+      wrap.classList.toggle("narrow", w <= 430);
+      wrap.classList.toggle("xnarrow", w <= 320);
+    });
+    this._ro.observe(this);
+  }
+
   connectedCallback() {
+    this._observeWidth();
     if (this._timer) clearInterval(this._timer);
     this._timer = setInterval(() => {
       if (this._hass && this._built && this._isRunning()) this._update();
@@ -204,6 +223,10 @@ class WashingMachineCard extends HTMLElement {
     if (this._timer) {
       clearInterval(this._timer);
       this._timer = null;
+    }
+    if (this._ro) {
+      this._ro.disconnect();
+      this._ro = null;
     }
   }
 
@@ -838,7 +861,6 @@ class WashingMachineCard extends HTMLElement {
           content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
           background: linear-gradient(90deg, #2f80ed, #56a8ff);
         }
-        .wrap { container-type: inline-size; }
         .header { display: flex; align-items: center; gap: 10px; }
         .h-icon {
           width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
@@ -858,12 +880,13 @@ class WashingMachineCard extends HTMLElement {
           padding: 6px 11px; border-radius: 999px;
           background: var(--wm-badge-bg); color: var(--wm-badge-fg); white-space: nowrap;
         }
-        @container (max-width: 430px) {
-          #badgeText { display: none; }
-          .badge { padding: 6px 8px; }
-          .header { gap: 8px; }
-          .h-title { font-size: 15.5px; }
-        }
+        /* Узкая колонка: классы ставит ResizeObserver (см. _observeWidth).
+           Раньше здесь были @container-правила, но container-type: inline-size
+           вызывал дёрганье прокрутки в мобильном приложении Home Assistant. */
+        .wrap.narrow #badgeText { display: none; }
+        .wrap.narrow .badge { padding: 6px 8px; }
+        .wrap.narrow .header { gap: 8px; }
+        .wrap.narrow .h-title { font-size: 15.5px; }
         .badge .b-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--wm-badge-dot); }
         .running .badge { background: var(--wm-badge-run-bg); color: var(--wm-badge-run-fg); }
         .running .badge .b-dot { background: #22b263; animation: pulse 1.6s ease-in-out infinite; }
@@ -1071,10 +1094,8 @@ class WashingMachineCard extends HTMLElement {
         .lc-value { font-size: 14.5px; font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
         .lc-unit { font-size: 11px; font-weight: 700; color: var(--wm-accent); }
         .hidden { display: none !important; }
-        @container (max-width: 320px) {
-          .lc-grid { grid-template-columns: 1fr 1fr; row-gap: 12px; }
-          .lc-item:nth-child(3) { border-left: none; padding-left: 0; }
-        }
+        .wrap.xnarrow .lc-grid { grid-template-columns: 1fr 1fr; row-gap: 12px; }
+        .wrap.xnarrow .lc-item:nth-child(3) { border-left: none; padding-left: 0; }
       </style>
 
       <ha-card>
@@ -1169,6 +1190,13 @@ class WashingMachineCard extends HTMLElement {
       this._el("lcCost").addEventListener("click", mi(c.cost_entity));
 
     this._built = true;
+    this._observeWidth();
+    const w0 = this.getBoundingClientRect().width;
+    if (w0) {
+      const wrap = this._el("wrap");
+      wrap.classList.toggle("narrow", w0 <= 430);
+      wrap.classList.toggle("xnarrow", w0 <= 320);
+    }
   }
 
   _update() {
