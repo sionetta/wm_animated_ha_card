@@ -1275,7 +1275,7 @@ class WashingMachineCard extends HTMLElement {
           box-shadow: var(--wm-panel-shadow);
         }
         .status-panel { display: flex; align-items: center; gap: 16px; }
-        .ring-box { position: relative; width: 96px; height: 96px; flex-shrink: 0; cursor: pointer; }
+        .ring-box { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
         .ring-box svg { width: 100%; height: 100%; }
         .ring-track { stroke: var(--wm-ring-track); }
         .ring-arc   { stroke: var(--wm-accent); stroke-linecap: round; }
@@ -1314,8 +1314,11 @@ class WashingMachineCard extends HTMLElement {
           margin-bottom: 10px;
         }
         .lc-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
-        .lc-item { padding: 0 12px; border-left: 1px solid var(--wm-divider); min-width: 0; cursor: pointer; }
-        .lc-item:first-child { border-left: none; padding-left: 0; }
+        .lc-item { padding: 0 12px 0 0; min-width: 0; cursor: pointer; }
+        .lc-item:not(.hidden) ~ .lc-item:not(.hidden) {
+          border-left: 1px solid var(--wm-divider);
+          padding-left: 12px;
+        }
         .lc-label { font-size: 10px; font-weight: 700; letter-spacing: .8px; color: var(--wm-label); }
         .lc-value { font-size: 14.5px; font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
         .lc-unit { font-size: 11px; font-weight: 700; color: var(--wm-accent); }
@@ -1395,7 +1398,6 @@ class WashingMachineCard extends HTMLElement {
 
         const mi = (ent) => () => this._moreInfo(ent);
         this._el("chartBtn").addEventListener("click", mi(c.power_entity || c.status_entity));
-        this._el("ringBox").addEventListener("click", mi(c.last_wash_entity || c.status_entity));
         if (c.power_entity)
             this._el("powerValue").addEventListener("click", mi(c.power_entity));
         if (c.notify_entity)
