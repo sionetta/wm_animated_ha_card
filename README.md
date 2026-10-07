@@ -102,6 +102,9 @@ name: Washing machine
 status_entity: binary_sensor.washing_in_progress   # REQUIRED
 plug_entity: switch.washing_machine_plug           # plug button, tap = toggle
 notify_entity: automation.washing_finished         # notification button, tap = toggle
+image_tap_action:                                  # tap on the illustration (optional)
+  action: navigate
+  navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # gauge + running detection
 power_threshold: 10                                # running above this value
 power_max: 2500                                    # gauge maximum
@@ -125,6 +128,7 @@ theme: auto                                        # auto / light / dark / ha
 | `name` | no | localized | Card title (defaults depend on `appliance_type`). |
 | `plug_entity` | no | — | Smart plug switch; shown as a header button, tap toggles it. |
 | `notify_entity` | no | — | Automation/switch/input_boolean for the "cycle finished" notification; tap toggles it. |
+| `image_tap_action` | no | — | What tapping the appliance illustration does, using Home Assistant's standard [actions](https://www.home-assistant.io/dashboards/actions/): `navigate`, `url`, `more-info`, `perform-action` and so on. Not set: tapping the illustration does nothing. |
 | `power_entity` | no | — | Power (W) or current (A) sensor: red gauge, value display, and it tells a running cycle from a paused one — see `power_threshold`. |
 | `power_threshold` | no | `10` | With a `power_entity`, a cycle that is under way but drawing less than this shows as **paused** rather than running. Without one the card cannot tell the two apart, and `status_entity` alone decides. |
 | `power_max` | no | `2500` | Gauge maximum, in `power_entity` units. |

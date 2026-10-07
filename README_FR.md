@@ -102,6 +102,9 @@ name: Lave-linge
 status_entity: binary_sensor.washing_in_progress   # OBLIGATOIRE
 plug_entity: switch.washing_machine_plug           # bouton prise, appui = commuter
 notify_entity: automation.washing_finished         # bouton notification, appui = commuter
+image_tap_action:                                  # appui sur l'illustration (facultatif)
+  action: navigate
+  navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # jauge + détection de marche
 power_threshold: 10                                # au-dessus, l'appareil est en marche
 power_max: 2500                                    # maximum de la jauge
@@ -125,6 +128,7 @@ theme: auto                                        # auto / light / dark / ha
 | `name` | non | localisé | Titre de la carte (le défaut dépend de `appliance_type`). |
 | `plug_entity` | non | — | Interrupteur de la prise connectée ; affiché comme bouton dans l'en-tête, l'appui le commute. |
 | `notify_entity` | non | — | Automatisation / switch / input_boolean de la notification « cycle terminé » ; l'appui la commute. |
+| `image_tap_action` | non | — | Ce que fait un appui sur l'illustration de l'appareil, avec les [actions](https://www.home-assistant.io/dashboards/actions/) standard de Home Assistant : `navigate`, `url`, `more-info`, `perform-action`, etc. Non défini : l'appui ne fait rien. |
 | `power_entity` | non | — | Capteur de puissance (W) ou de courant (A) : jauge rouge, affichage de la valeur, et il distingue un cycle en marche d'un cycle en pause — voir `power_threshold`. |
 | `power_threshold` | non | `10` | Avec un `power_entity`, un cycle en cours qui consomme moins que cette valeur s'affiche **en pause** plutôt qu'en marche. Sans ce capteur, la carte ne peut pas faire la différence et seul `status_entity` décide. |
 | `power_max` | non | `2500` | Maximum de la jauge, dans l'unité de `power_entity`. |

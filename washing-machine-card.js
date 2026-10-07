@@ -491,6 +491,24 @@ class WashingMachineCard extends HTMLElement {
             null);
     }
 
+    // Home Assistant's frontend performs standard card actions on a "hass-action" event,
+    // including navigate, url, more-info, toggle, perform-action and confirmation dialogs.
+    _handleImageTap() {
+        const c = this._config;
+        this.dispatchEvent(
+            new CustomEvent("hass-action", {
+                detail: {
+                    config: {
+                        entity: c.status_entity,
+                        tap_action: c.image_tap_action,
+                    },
+                    action: "tap",
+                },
+                bubbles: true,
+                composed: true,
+            }));
+    }
+
     _moreInfo(entityId) {
         this.dispatchEvent(
             new CustomEvent("hass-more-info", {
@@ -1158,6 +1176,8 @@ class WashingMachineCard extends HTMLElement {
 
         .hero { display: flex; justify-content: center; padding: 14px 0 6px; }
         .machine { width: 210px; max-width: 62%; filter: brightness(var(--wm-appliance-dim)); }
+        .machine.tappable { cursor: pointer; outline: none; }
+        .machine.tappable:focus-visible { outline: 2px solid var(--wm-accent); outline-offset: 4px; border-radius: 14px; }
 
         .laundry, .drum, .arcs {
           transform-box: view-box;
@@ -1438,6 +1458,23 @@ class WashingMachineCard extends HTMLElement {
             this._el("lcEnergy").addEventListener("click", mi(c.energy_entity));
         if (c.cost_entity)
             this._el("lcCost").addEventListener("click", mi(c.cost_entity));
+
+        // #26: optional action when the appliance illustration is tapped.
+        // Unset (or action: none) keeps the illustration inert, as before.
+        const imageTap = c.image_tap_action;
+        if (imageTap && imageTap.action && imageTap.action !== "none") {
+            const machine = this._el("machine");
+            machine.classList.add("tappable");
+            machine.setAttribute("role", "button");
+            machine.setAttribute("tabindex", "0");
+            machine.addEventListener("click", () => this._handleImageTap());
+            machine.addEventListener("keydown", (ev) => {
+                if (ev.key === "Enter" || ev.key === " ") {
+                    ev.preventDefault();
+                    this._handleImageTap();
+                }
+            });
+        }
 
         this._built = true;
         this._observeWidth();
@@ -1914,6 +1951,16 @@ class WashingMachineCardEditor extends HTMLElement {
                         selector: {
                             entity: {}
                         },
+                    }, {
+                        key: "image_tap_action",
+                        kind: "action",
+                        title: "Tap on the appliance image",
+                        description: "Optional. Open a dashboard, a URL or more-info, or run an action when the illustration is tapped.",
+                        selector: {
+                            ui_action: {
+                                default_action: "none"
+                            }
+                        },
                     },
                 ],
             }, {
@@ -2255,6 +2302,8 @@ class WashingMachineCardEditor extends HTMLElement {
                     if (field.key === "appliance_type")
                         v = WashingMachineCard.normalizeType(v);
                     el.value = v;
+                } else if (field.kind === "action") {
+                    el.value = hasValue ? raw : undefined;
                 } else {
                     el.value = hasValue ? raw : "";
                     const def = field.dynamicDefault
@@ -2276,6 +2325,8 @@ class WashingMachineCardEditor extends HTMLElement {
         }
         if (field.key === "appliance_type")
             v = WashingMachineCard.normalizeType(v);
+        if (field.kind === "action" && (!v || !v.action || v.action === "none"))
+            v = undefined;
         const oldCacheKey = field.key === "status_entity"
             ? WashingMachineCardEditor._keywordsCacheKey(this._config)
             : null;
@@ -2433,6 +2484,9 @@ name: Washing machine
 status_entity: binary_sensor.washing_in_progress
 plug_entity: switch.washing_machine_plug
 notify_entity: automation.washing_finished
+image_tap_action:                           # optional: what tapping the illustration does
+  action: navigate
+  navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power
 power_threshold: 10
 power_max: 2500

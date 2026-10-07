@@ -102,6 +102,9 @@ name: Wasmachine
 status_entity: binary_sensor.washing_in_progress   # VERPLICHT
 plug_entity: switch.washing_machine_plug           # stekkerknop, tikken = schakelen
 notify_entity: automation.washing_finished         # meldingsknop, tikken = schakelen
+image_tap_action:                                  # tik op de illustratie (optioneel)
+  action: navigate
+  navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # meter + detectie van draaien
 power_threshold: 10                                # loopt boven deze waarde
 power_max: 2500                                    # maximum van de meter
@@ -125,6 +128,7 @@ theme: auto                                        # auto / light / dark / ha
 | `name` | nee | gelokaliseerd | Titel van de kaart (standaardwaarden hangen af van `appliance_type`). |
 | `plug_entity` | nee | — | Smart-plug-schakelaar; getoond als knop in de header, tikken schakelt hem. |
 | `notify_entity` | nee | — | Automatisering/schakelaar/input_boolean voor de melding "cyclus voltooid"; tikken schakelt hem. |
+| `image_tap_action` | nee | — | Wat een tik op de illustratie van het apparaat doet, met de standaard [acties](https://www.home-assistant.io/dashboards/actions/) van Home Assistant: `navigate`, `url`, `more-info`, `perform-action` enzovoort. Niet ingesteld: tikken doet niets. |
 | `power_entity` | nee | — | Vermogen- (W) of stroomsensor (A): rode meter, waardeweergave, en hij onderscheidt een lopende cyclus van een gepauzeerde — zie `power_threshold`. |
 | `power_threshold` | nee | `10` | Met een `power_entity` wordt een lopende cyclus die minder dan deze waarde verbruikt weergegeven als **gepauzeerd** in plaats van lopend. Zonder die sensor ziet de kaart het verschil niet en beslist alleen `status_entity`. |
 | `power_max` | nee | `2500` | Maximum van de meter, in de eenheid van `power_entity`. |

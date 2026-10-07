@@ -102,6 +102,9 @@ name: Стиральная машина
 status_entity: binary_sensor.washing_in_progress   # ОБЯЗАТЕЛЬНЫЙ
 plug_entity: switch.washing_machine_plug           # кнопка «Розетка», тап = переключить
 notify_entity: automation.washing_finished         # кнопка «Уведомление», тап = переключить
+image_tap_action:                                  # нажатие на изображение (необязательно)
+  action: navigate
+  navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # шкала + детект работы
 power_threshold: 10                                # выше этого значения прибор работает
 power_max: 2500                                    # максимум шкалы
@@ -125,6 +128,7 @@ theme: auto                                        # auto / light / dark / ha
 | `name` | нет | по языку | Название карточки (по умолчанию зависит от `appliance_type`). |
 | `plug_entity` | нет | — | Выключатель умной розетки; показывается кнопкой в шапке, тап переключает. |
 | `notify_entity` | нет | — | Автоматизация / switch / input_boolean уведомления об окончании цикла; тап переключает. |
+| `image_tap_action` | нет | — | Что происходит при нажатии на изображение прибора — стандартные [действия](https://www.home-assistant.io/dashboards/actions/) Home Assistant: `navigate`, `url`, `more-info`, `perform-action` и другие. Если не задано, нажатие ничего не делает. |
 | `power_entity` | нет | — | Датчик мощности (Вт) или тока (А): красная шкала, отображение значения и различение работы и паузы — см. `power_threshold`. |
 | `power_threshold` | нет | `10` | При заданном `power_entity` идущий цикл, потребляющий меньше этого значения, показывается как **пауза**, а не как работа. Без датчика карточка их не различает, и решает только `status_entity`. |
 | `power_max` | нет | `2500` | Максимум шкалы, в единицах `power_entity`. |

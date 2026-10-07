@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **`image_tap_action`** — choose what tapping the appliance illustration does,
+  with Home Assistant's standard card actions: open another dashboard
+  (`navigate`), a web page (`url`), a more-info dialog, or run an action. Handy for
+  jumping to an appliance's own dashboard or to the WashData panel. Configurable in
+  the visual editor with Home Assistant's own action picker. Not set by default,
+  so existing cards behave exactly as before. Requested by
+  [@Aaroneisele55](https://github.com/Aaroneisele55) (#26).
+
 ## [1.4.0] — 2026-10-03
 
 ### Added

@@ -102,6 +102,9 @@ name: Waschmaschine
 status_entity: binary_sensor.washing_in_progress   # PFLICHT
 plug_entity: switch.washing_machine_plug           # Steckdosen-Button, Tippen schaltet um
 notify_entity: automation.washing_finished         # Benachrichtigungs-Button, Tippen schaltet um
+image_tap_action:                                  # Tippen auf die Illustration (optional)
+  action: navigate
+  navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # Anzeige + Laufterkennung
 power_threshold: 10                                # darüber gilt das Gerät als laufend
 power_max: 2500                                    # Maximum der Anzeige
@@ -125,6 +128,7 @@ theme: auto                                        # auto / light / dark / ha
 | `name` | nein | übersetzt | Titel der Karte (Default hängt von `appliance_type` ab). |
 | `plug_entity` | nein | – | Schalter der Steckdose. Erscheint als Button in der Kopfzeile, Tippen schaltet um. |
 | `notify_entity` | nein | – | Automatisierung, `switch` oder `input_boolean` für die Benachrichtigung „Durchgang beendet“. Tippen schaltet um. |
+| `image_tap_action` | nein | – | Was ein Tippen auf die Geräte-Illustration auslöst – mit den Standard-[Aktionen](https://www.home-assistant.io/dashboards/actions/) von Home Assistant: `navigate`, `url`, `more-info`, `perform-action` usw. Nicht gesetzt: Tippen bewirkt nichts. |
 | `power_entity` | nein | – | Sensor für Leistung (W) oder Strom (A): rote Skala, Wertanzeige, und er unterscheidet einen laufenden Durchgang von einer Pause – siehe `power_threshold`. |
 | `power_threshold` | nein | `10` | Mit einem `power_entity` wird ein laufender Durchgang, der weniger als diesen Wert zieht, als **Pause** angezeigt statt als laufend. Ohne den Sensor kann die Karte beides nicht unterscheiden, und allein `status_entity` entscheidet. |
 | `power_max` | nein | `2500` | Maximum der Skala, in Einheiten von `power_entity`. |
