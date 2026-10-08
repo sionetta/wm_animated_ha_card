@@ -195,6 +195,10 @@ notities over wat leeg blijft en waarom.
 
 Zie [CHANGELOG.md](CHANGELOG.md) voor de release-geschiedenis.
 
+## ☕ Het project steunen
+
+De kaart is gratis en open source. Maakt hij je huis wat fijner en wil je bedankt zeggen, dan kun je [een kopje koffie voor me kopen op Ko-fi](https://ko-fi.com/sionetta). Een ster op GitHub of een tip aan een andere Home Assistant-gebruiker helpt net zo goed.
+
 ## 📄 Licentie
 
 [MIT](LICENSE) © 2026 [sionetta](https://github.com/sionetta)

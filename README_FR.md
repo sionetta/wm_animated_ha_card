@@ -197,6 +197,10 @@ carte n'a pas d'options dédiées, ainsi que des notes sur ce qui reste vide et 
 
 L'historique des versions est dans [CHANGELOG.md](CHANGELOG.md).
 
+## ☕ Soutenir le projet
+
+La carte est gratuite et open source. Si elle rend votre maison un peu plus agréable et que vous souhaitez dire merci, vous pouvez [m'offrir un café sur Ko-fi](https://ko-fi.com/sionetta). Une étoile sur GitHub ou un mot à un autre utilisateur de Home Assistant aide tout autant.
+
 ## 📄 Licence
 
 [MIT](LICENSE) © 2026 [sionetta](https://github.com/sionetta)

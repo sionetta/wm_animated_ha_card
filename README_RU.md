@@ -196,6 +196,10 @@ show_raw_status: true
 
 Список релизов — в [CHANGELOG.md](CHANGELOG.md).
 
+## ☕ Поддержать проект
+
+Карточка бесплатная и с открытым кодом. Если она делает ваш дом чуточку удобнее и вы хотите сказать спасибо, можно [угостить автора кофе на Ko-fi](https://ko-fi.com/sionetta). Звезда на GitHub или рассказ другому пользователю Home Assistant помогают не меньше.
+
 ## 📄 Лицензия
 
 [MIT](LICENSE) © 2026 [sionetta](https://github.com/sionetta)

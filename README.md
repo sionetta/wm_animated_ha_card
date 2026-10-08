@@ -195,6 +195,10 @@ notes on what stays empty and why.
 
 See [CHANGELOG.md](CHANGELOG.md) for the release history.
 
+## ☕ Support the project
+
+The card is free and open source. If it makes your home a little nicer and you would like to say thanks, you can [buy me a coffee on Ko-fi](https://ko-fi.com/sionetta). A star on GitHub or a word to a fellow Home Assistant user helps just as much.
+
 ## 📄 License
 
 [MIT](LICENSE) © 2026 [sionetta](https://github.com/sionetta)

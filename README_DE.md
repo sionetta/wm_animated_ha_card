@@ -197,6 +197,10 @@ keine eigenen Optionen hat, samt Hinweisen, was leer bleibt und warum.
 
 Die Release-Historie steht in [CHANGELOG.md](CHANGELOG.md).
 
+## ☕ Projekt unterstützen
+
+Die Karte ist kostenlos und Open Source. Wenn sie dein Zuhause ein wenig schöner macht und du Danke sagen möchtest, kannst du mir [auf Ko-fi einen Kaffee spendieren](https://ko-fi.com/sionetta). Ein Stern auf GitHub oder eine Empfehlung an andere Home-Assistant-Nutzer hilft genauso.
+
 ## 📄 Lizenz
 
 [MIT](LICENSE) © 2026 [sionetta](https://github.com/sionetta)
