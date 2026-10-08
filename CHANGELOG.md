@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the visual editor with Home Assistant's own action picker. Not set by default,
   so existing cards behave exactly as before. Requested by
   [@Aaroneisele55](https://github.com/Aaroneisele55) (#26).
+- **`standby_threshold`** — a new **standby** state for appliances that are left
+  on after the cycle. With a `power_entity`, when no cycle is running but the
+  appliance still draws more than this many watts, the card shows *Standby*
+  instead of *Off* (and keeps the status panel visible even with
+  `hide_status_panel`). Opt-in: not set by default, so plugs that report a little
+  noise with the appliance off keep showing *Off*. Translated into all six
+  languages and available in the visual editor. Based on a patch by
+  [@entdgc](https://github.com/entdgc) (#29).
 
 ## [1.4.0] — 2026-10-03
 

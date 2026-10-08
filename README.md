@@ -107,6 +107,7 @@ image_tap_action:                                  # tap on the illustration (op
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # gauge + running detection
 power_threshold: 10                                # running above this value
+standby_threshold: 1                               # optional: appliance left on, no cycle → STANDBY
 power_max: 2500                                    # gauge maximum
 last_wash_entity: input_datetime.wm_last_start     # cycle start timestamp
 duration_entity: input_number.wm_last_duration     # cycle duration, minutes
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `image_tap_action` | no | — | What tapping the appliance illustration does, using Home Assistant's standard [actions](https://www.home-assistant.io/dashboards/actions/): `navigate`, `url`, `more-info`, `perform-action` and so on. Not set: tapping the illustration does nothing. |
 | `power_entity` | no | — | Power (W) or current (A) sensor: red gauge, value display, and it tells a running cycle from a paused one — see `power_threshold`. |
 | `power_threshold` | no | `10` | With a `power_entity`, a cycle that is under way but drawing less than this shows as **paused** rather than running. Without one the card cannot tell the two apart, and `status_entity` alone decides. |
+| `standby_threshold` | no | — | With a `power_entity`: when no cycle is running but the appliance still draws more than this (W), the card shows **standby** instead of off — handy when the plug stays on and the machine has not been switched off after the cycle. Set it just above what your plug reports with the appliance off (often `0`–`1`). Not set: no standby state. |
 | `power_max` | no | `2500` | Gauge maximum, in `power_entity` units. |
 | `last_wash_entity` | no | — | `input_datetime` with the cycle start; also the source of the elapsed time. |
 | `duration_entity` | no | — | Last cycle duration in minutes. |

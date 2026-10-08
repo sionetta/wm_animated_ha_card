@@ -107,6 +107,7 @@ image_tap_action:                                  # appui sur l'illustration (f
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # jauge + détection de marche
 power_threshold: 10                                # au-dessus, l'appareil est en marche
+standby_threshold: 1                               # facultatif : appareil allumé, sans cycle → EN VEILLE
 power_max: 2500                                    # maximum de la jauge
 last_wash_entity: input_datetime.wm_last_start     # horodatage du début de cycle
 duration_entity: input_number.wm_last_duration     # durée du cycle, en minutes
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `image_tap_action` | non | — | Ce que fait un appui sur l'illustration de l'appareil, avec les [actions](https://www.home-assistant.io/dashboards/actions/) standard de Home Assistant : `navigate`, `url`, `more-info`, `perform-action`, etc. Non défini : l'appui ne fait rien. |
 | `power_entity` | non | — | Capteur de puissance (W) ou de courant (A) : jauge rouge, affichage de la valeur, et il distingue un cycle en marche d'un cycle en pause — voir `power_threshold`. |
 | `power_threshold` | non | `10` | Avec un `power_entity`, un cycle en cours qui consomme moins que cette valeur s'affiche **en pause** plutôt qu'en marche. Sans ce capteur, la carte ne peut pas faire la différence et seul `status_entity` décide. |
+| `standby_threshold` | non | — | Avec un `power_entity` : quand aucun cycle n'est en cours mais que l'appareil consomme encore plus que cette valeur (W), la carte affiche **en veille** au lieu d'éteint — pratique quand la prise reste allumée et que l'appareil n'a pas été éteint après le cycle. Choisissez une valeur juste au-dessus de ce que la prise indique appareil éteint (souvent `0`–`1`). Non défini : pas d'état de veille. |
 | `power_max` | non | `2500` | Maximum de la jauge, dans l'unité de `power_entity`. |
 | `last_wash_entity` | non | — | `input_datetime` contenant le début du cycle ; sert aussi à calculer le temps écoulé. |
 | `duration_entity` | non | — | Durée du dernier cycle, en minutes. |

@@ -107,6 +107,7 @@ image_tap_action:                                  # tik op de illustratie (opti
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # meter + detectie van draaien
 power_threshold: 10                                # loopt boven deze waarde
+standby_threshold: 1                               # optioneel: apparaat aan, geen cyclus → STAND-BY
 power_max: 2500                                    # maximum van de meter
 last_wash_entity: input_datetime.wm_last_start     # tijdstempel start cyclus
 duration_entity: input_number.wm_last_duration     # duur cyclus, minuten
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `image_tap_action` | nee | — | Wat een tik op de illustratie van het apparaat doet, met de standaard [acties](https://www.home-assistant.io/dashboards/actions/) van Home Assistant: `navigate`, `url`, `more-info`, `perform-action` enzovoort. Niet ingesteld: tikken doet niets. |
 | `power_entity` | nee | — | Vermogen- (W) of stroomsensor (A): rode meter, waardeweergave, en hij onderscheidt een lopende cyclus van een gepauzeerde — zie `power_threshold`. |
 | `power_threshold` | nee | `10` | Met een `power_entity` wordt een lopende cyclus die minder dan deze waarde verbruikt weergegeven als **gepauzeerd** in plaats van lopend. Zonder die sensor ziet de kaart het verschil niet en beslist alleen `status_entity`. |
+| `standby_threshold` | nee | — | Met een `power_entity`: loopt er geen cyclus maar verbruikt het apparaat nog meer dan deze waarde (W), dan toont de kaart **stand-by** in plaats van uit — handig als de stekker altijd aan staat en het apparaat na de cyclus niet is uitgezet. Kies een waarde net boven wat de stekker meldt met het apparaat uit (vaak `0`–`1`). Niet ingesteld: geen stand-by. |
 | `power_max` | nee | `2500` | Maximum van de meter, in de eenheid van `power_entity`. |
 | `last_wash_entity` | nee | — | `input_datetime` met de start van de cyclus; ook de bron van de verstreken tijd. |
 | `duration_entity` | nee | — | Duur van de laatste cyclus in minuten. |

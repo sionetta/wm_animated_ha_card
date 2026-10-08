@@ -107,6 +107,7 @@ image_tap_action:                                  # Tippen auf die Illustration
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # Anzeige + Laufterkennung
 power_threshold: 10                                # darüber gilt das Gerät als laufend
+standby_threshold: 1                               # optional: Gerät an, kein Durchgang → STANDBY
 power_max: 2500                                    # Maximum der Anzeige
 last_wash_entity: input_datetime.wm_last_start     # Startzeitpunkt des Durchgangs
 duration_entity: input_number.wm_last_duration     # Dauer des Durchgangs, Minuten
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `image_tap_action` | nein | – | Was ein Tippen auf die Geräte-Illustration auslöst – mit den Standard-[Aktionen](https://www.home-assistant.io/dashboards/actions/) von Home Assistant: `navigate`, `url`, `more-info`, `perform-action` usw. Nicht gesetzt: Tippen bewirkt nichts. |
 | `power_entity` | nein | – | Sensor für Leistung (W) oder Strom (A): rote Skala, Wertanzeige, und er unterscheidet einen laufenden Durchgang von einer Pause – siehe `power_threshold`. |
 | `power_threshold` | nein | `10` | Mit einem `power_entity` wird ein laufender Durchgang, der weniger als diesen Wert zieht, als **Pause** angezeigt statt als laufend. Ohne den Sensor kann die Karte beides nicht unterscheiden, und allein `status_entity` entscheidet. |
+| `standby_threshold` | nein | – | Mit einem `power_entity`: läuft kein Durchgang, zieht das Gerät aber noch mehr als diesen Wert (W), zeigt die Karte **Standby** statt Aus – praktisch, wenn die Steckdose immer an ist und das Gerät nach dem Durchgang nicht ausgeschaltet wurde. Knapp über dem Wert wählen, den die Steckdose bei ausgeschaltetem Gerät meldet (meist `0`–`1`). Nicht gesetzt: kein Standby-Zustand. |
 | `power_max` | nein | `2500` | Maximum der Skala, in Einheiten von `power_entity`. |
 | `last_wash_entity` | nein | – | `input_datetime` mit dem Start des Durchgangs; daraus wird auch die verstrichene Zeit berechnet. |
 | `duration_entity` | nein | – | Dauer des letzten Durchgangs in Minuten. |
