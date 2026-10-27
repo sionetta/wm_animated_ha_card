@@ -106,6 +106,7 @@ image_tap_action:                                  # tap on the illustration (op
   action: navigate
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # gauge + running detection
+remaining_entity: sensor.washing_machine_remaining_time # optional remaining time / end time source
 power_threshold: 10                                # running above this value
 standby_threshold: 1                               # optional: appliance left on, no cycle → STANDBY
 power_max: 2500                                    # gauge maximum
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `notify_entity` | no | — | Automation/switch/input_boolean for the "cycle finished" notification; tap toggles it. |
 | `image_tap_action` | no | — | What tapping the appliance illustration does, using Home Assistant's standard [actions](https://www.home-assistant.io/dashboards/actions/): `navigate`, `url`, `more-info`, `perform-action` and so on. Not set: tapping the illustration does nothing. |
 | `power_entity` | no | — | Power (W) or current (A) sensor: red gauge, value display, and it tells a running cycle from a paused one — see `power_threshold`. |
+| `remaining_entity` | no | — | Optional remaining-time source. Accepts numeric minutes, common duration units (including milliseconds), an end timestamp, time-only `input_datetime`, or `H:MM:SS` / `H:MM`. While a cycle is active, a valid value replaces elapsed time in the ring and appliance display. Invalid/unavailable values fall back to elapsed time. |
 | `power_threshold` | no | `10` | With a `power_entity`, a cycle that is under way but drawing less than this shows as **paused** rather than running. Without one the card cannot tell the two apart, and `status_entity` alone decides. |
 | `standby_threshold` | no | — | With a `power_entity`: when no cycle is running but the appliance still draws more than this (W), the card shows **standby** instead of off — handy when the plug stays on and the machine has not been switched off after the cycle. Set it just above what your plug reports with the appliance off (often `0`–`1`). Not set: no standby state. |
 | `power_max` | no | `2500` | Gauge maximum, in `power_entity` units. |
