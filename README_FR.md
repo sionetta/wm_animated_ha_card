@@ -16,7 +16,7 @@ Une carte Lovelace inspirée d'Oikos qui transforme un lave-linge, sèche-linge,
 - **État en direct** — un badge clignotant « EN MARCHE / INACTIF », un anneau avec le temps écoulé et une jauge de puissance qui choisit son unité toute seule (`1950 W` s'affiche `1,95 kW` ; avec un capteur de courant, le libellé devient « Courant instantané »).
 - **Résumé du dernier cycle** — heure de départ (« Aujourd'hui, 09:55 »), durée, énergie et coût ; chaque colonne ouvre la fenêtre more-info d'une simple pression.
 - **Actions rapides** — les boutons de l'en-tête commutent la prise connectée et l'automatisation de notification de fin, et ouvrent l'historique de puissance.
-- **Six langues** — français, anglais, russe, allemand, néerlandais et portugais d'origine. La langue suit votre profil Home Assistant, ou se force avec `language: fr | en | ru | de | nl | pt`.
+- **Sept langues** — français, anglais, russe, allemand, néerlandais, portugais et grec d'origine. La langue suit votre profil Home Assistant, ou se force avec `language: fr | en | ru | de | nl | pt | el`.
 - **Éditeur visuel** — la carte fournit un formulaire de configuration : elle se règle depuis l'interface, sans toucher au YAML.
 - **Aucune dépendance** — un seul fichier JavaScript natif avec Shadow DOM. Toutes les options d'entité sauf `status_entity` sont facultatives : les blocs sans entité sont simplement masqués. S'adapte à la largeur, de la colonne complète du tableau de bord à l'affichage étroit d'un téléphone.
 
@@ -106,6 +106,7 @@ image_tap_action:                                  # appui sur l'illustration (f
   action: navigate
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # jauge + détection de marche
+remaining_entity: sensor.washing_machine_remaining # facultatif : temps restant ou heure de fin
 power_threshold: 10                                # au-dessus, l'appareil est en marche
 standby_threshold: 1                               # facultatif : appareil allumé, sans cycle → EN VEILLE
 power_max: 2500                                    # maximum de la jauge
@@ -118,7 +119,7 @@ show_raw_status: false                             # Afficher la valeur brute de
 duration_format: minutes                           # minutes / hhmm
 confirm_plug_off: true                             # affiche une popup de confirmation avant d'éteindre `plug_entity`
 currency: "€"
-language: fr                                       # auto / fr / en / ru / de / nl / pt (auto = langue de HA)
+language: fr                                       # auto / fr / en / ru / de / nl / pt / el (auto = langue de HA)
 theme: auto                                        # auto / light / dark / ha
 ```
 
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `notify_entity` | non | — | Automatisation / switch / input_boolean de la notification « cycle terminé » ; l'appui la commute. |
 | `image_tap_action` | non | — | Ce que fait un appui sur l'illustration de l'appareil, avec les [actions](https://www.home-assistant.io/dashboards/actions/) standard de Home Assistant : `navigate`, `url`, `more-info`, `perform-action`, etc. Non défini : l'appui ne fait rien. |
 | `power_entity` | non | — | Capteur de puissance (W) ou de courant (A) : jauge rouge, affichage de la valeur, et il distingue un cycle en marche d'un cycle en pause — voir `power_threshold`. |
+| `remaining_entity` | non | — | Source du temps restant. Accepte un nombre de minutes, une durée dans les unités HA courantes (millisecondes comprises), un horodatage de fin, un `input_datetime` avec l'heure seule, ou `H:MM:SS` / `H:MM`. Pendant un cycle, une valeur valide remplace le temps écoulé dans l'anneau et sur l'afficheur de l'appareil ; si la valeur est indisponible ou illisible, le temps écoulé reste affiché. |
 | `power_threshold` | non | `10` | Avec un `power_entity`, un cycle en cours qui consomme moins que cette valeur s'affiche **en pause** plutôt qu'en marche. Sans ce capteur, la carte ne peut pas faire la différence et seul `status_entity` décide. |
 | `standby_threshold` | non | — | Avec un `power_entity` : quand aucun cycle n'est en cours mais que l'appareil consomme encore plus que cette valeur (W), la carte affiche **en veille** au lieu d'éteint — pratique quand la prise reste allumée et que l'appareil n'a pas été éteint après le cycle. Choisissez une valeur juste au-dessus de ce que la prise indique appareil éteint (souvent `0`–`1`). Non défini : pas d'état de veille. |
 | `power_max` | non | `2500` | Maximum de la jauge, dans l'unité de `power_entity`. |
@@ -139,12 +141,12 @@ theme: auto                                        # auto / light / dark / ha
 | `energy_entity` | non | — | Énergie par cycle, en kWh. |
 | `cost_entity` | non | — | Coût par cycle. |
 | `currency` | non | `€` | Symbole monétaire de la colonne coût. |
-| `running_states` | non | on, washing, lavage, run, essorage, … | États de `status_entity` considérés comme « en marche » (les états français, anglais, russes, allemands, néerlandais et portugais sont reconnus). |
+| `running_states` | non | on, washing, lavage, run, essorage, … | États de `status_entity` considérés comme « en marche » (les états français, anglais, russes, allemands, néerlandais, portugais et grecs sont reconnus). |
 | `hide_status_panel` | non | false | Masquer le panneau de statut uniquement lorsque l'appareil est inactif. |
 | `show_raw_status` | non | false | Affiche la valeur brute de `status_entity` dans le panneau d’état de la carte. Cette option est utile lorsqu’un appareil connecté fournit directement son état. L’état doit toujours correspondre à l’une des valeurs définies dans `running_states`.|
 | `duration_format` | non | minutes | `minutes`, `hhmm`. Formate la durée du dernier cycle. Lorsque `duration_format` est défini sur `hhmm` et que la durée est égale ou supérieure à 60 minutes, la valeur est affichée au format HHhMM (par exemple, 1h05). |
 | `confirm_plug_off` | non | true | Affiche une popup de confirmation avant d'éteindre `plug_entity`. |
-| `language` | non | `auto` | `auto`, `fr`, `en`, `ru`, `de`, `nl` ou `pt`. |
+| `language` | non | `auto` | `auto`, `fr`, `en`, `ru`, `de`, `nl`, `pt` ou `el`. |
 | `theme` | non | `auto` | `auto`, `light` et `dark` utilisent le style propre de la carte. `ha` adopte à la place les couleurs de votre thème Home Assistant. |
 
 ## 🧺 Types d'appareils
@@ -157,7 +159,7 @@ theme: auto                                        # auto / light / dark / ha
 | `oven` | Four | Cuisson en cours |
 | `microwave` | Micro-ondes | Réchauffage en cours |
 
-Les titres et libellés sont traduits dans les six langues ; `name` remplace le titre.
+Les titres et libellés sont traduits dans les sept langues ; `name` remplace le titre.
 
 ## 🧠 Comment ça marche avec un appareil ordinaire
 

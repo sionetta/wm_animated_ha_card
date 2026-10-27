@@ -9,7 +9,7 @@
  * License: MIT
  * Version: 1.4.0
  *
- * UI languages: en, ru, de, fr, nl, pt (auto-detected from Home Assistant, or set `language:`).
+ * UI languages: en, ru, de, fr, nl, pt, el (auto-detected from Home Assistant, or set `language:`).
  * Appliances: washer, dryer, dishwasher, oven, microwave (`appliance_type:`).
  * Theme: follows the Home Assistant theme automatically (`theme: auto | light | dark`),
  * or `theme: ha` to adopt the colours of your active Home Assistant theme.
@@ -171,6 +171,31 @@ class WashingMachineCard extends HTMLElement {
                 "centrifugação", "centrifugacao", "centrifugando", "enxágue", "enxague", "enxaguando", "enxaguar",
                 "secando", "secagem", "secar",
                 "assando", "assar", "cozinhando", "cozinhar", "aquecendo", "aquecer", "micro-ondas", "forno",
+            ],
+        },
+        el: {
+            name: "Πλυντήριο ρούχων",
+            badge_running: "ΣΕ ΛΕΙΤΟΥΡΓΙΑ", badge_idle: "ΑΝΑΜΟΝΗ", badge_paused: "ΠΑΥΣΗ", badge_off: "ΕΚΤΟΣ", badge_standby: "ΑΝΑΜΟΝΗ", badge_nodata: "ΧΩΡΙΣ ΔΕΔΟΜΕΝΑ",
+            state_running: "Πλύση", state_idle: "Αναμονή", state_paused: "Σε παύση", state_off: "Εκτός λειτουργίας", state_standby: "Κατάσταση αναμονής", state_nodata: "Χωρίς δεδομένα",
+            ring_running: "ΠΑΡΗΛΘΕ", ring_idle: "ΑΝΑΜΟΝΗ", ring_paused: "ΠΑΥΣΗ", ring_off: "ΕΚΤΟΣ", ring_standby: "ΑΝΑΜΟΝΗ", ring_remaining: "ΑΠΟΜΕΝΕΙ",
+            power: "Τρέχουσα ισχύς", current: "Τρέχον ρεύμα",
+            last_cycle: "ΤΕΛΕΥΤΑΙΟΣ ΚΥΚΛΟΣ", start: "ΕΝΑΡΞΗ", duration: "ΔΙΑΡΚΕΙΑ",
+            energy: "ΕΝΕΡΓΕΙΑ", cost: "ΚΟΣΤΟΣ",
+            min: "λεπ.", kwh: "kWh", kw: "kW",
+            today: "Σήμερα", yesterday: "Χθες",
+            tip_notify: "Ειδοποίηση ολοκλήρωσης", tip_plug: "Πρίζα συσκευής", tip_history: "Ιστορικό",
+            confirm_plug_off: "Να απενεργοποιηθεί η πρίζα; Αυτό μπορεί να διακόψει τον τρέχοντα κύκλο.",
+            types: {
+                washer: { name: "Πλυντήριο ρούχων", state_running: "Πλύση" },
+                dryer: { name: "Στεγνωτήριο", state_running: "Στέγνωμα" },
+                dishwasher: { name: "Πλυντήριο πιάτων", state_running: "Πλύσιμο πιάτων" },
+                oven: { name: "Φούρνος", state_running: "Ψήσιμο" },
+                microwave: { name: "Φούρνος μικροκυμάτων", state_running: "Ζέσταμα" },
+            },
+            running_states: [
+                "πλύση", "πλυση", "πλύσιμο", "πλυσιμο", "ξέβγαλμα", "ξεβγαλμα", "στύψιμο", "στυψιμο",
+                "στέγνωμα", "στεγνωμα", "σε λειτουργία", "σε λειτουργια",
+                "ψήσιμο", "ψησιμο", "μαγείρεμα", "μαγειρεμα", "ζέσταμα", "ζεσταμα",
             ],
         },
     };
@@ -2589,7 +2614,7 @@ duration_format: minutes                    # minutes | hhmm (e.g. "1h05" once i
 energy_entity: input_number.wm_last_energy
 cost_entity: input_number.wm_last_cost
 currency: "€"
-language: auto                              # auto | en | ru | de | fr | nl | pt (auto = match Home Assistant's language)
+language: auto                              # auto | en | ru | de | fr | nl | pt | el (auto = match Home Assistant's language)
 theme: auto                                 # auto | light | dark | ha (ha = native Home Assistant colours)
 hide_status_panel: false                    # true hides the status panel while idle
 show_raw_status: false                      # true shows the raw value of the status entity in the card's status panel (hidden in the editor when status_entity is an input_boolean)

@@ -9,11 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - **`remaining_entity`** — optional generic remaining-time input for the ring and
   appliance display. Accepts numeric minutes, common Home Assistant duration
-  units, an end timestamp, or `H:MM:SS`. If the entity is unavailable or cannot
+  units (milliseconds to days), an end timestamp, a time-only `input_datetime`
+  (the next occurrence of that time), or `H:MM:SS` / `H:MM`. The ring label
+  reads *Remaining* in every language. If the entity is unavailable or cannot
   be parsed, the card falls back to its existing elapsed-time behaviour. The card
   does not calculate predictions itself; any integration or helper can provide
   the value.
   Contributed by [@Xavi2503](https://github.com/Xavi2503) (#35); requested in #22 and #28.
+- **Greek** — the card's seventh UI language, covering every label, all five
+  appliance types, the standby and remaining-time labels, and Greek entries in
+  `running_states` (with and without accents, since Home Assistant states are
+  matched case-insensitively and Greek capitals drop the accent). Requested by
+  [@nikoss123](https://github.com/nikoss123) (#32); corrections from native
+  speakers are welcome.
 - **`image_tap_action`** — choose what tapping the appliance illustration does,
   with Home Assistant's standard card actions: open another dashboard
   (`navigate`), a web page (`url`), a more-info dialog, or run an action. Handy for

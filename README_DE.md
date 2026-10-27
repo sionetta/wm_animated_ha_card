@@ -16,7 +16,7 @@ Eine Oikos-inspirierte Lovelace-Karte, die aus einer *nicht smarten* Waschmaschi
 - **Live-Status** – ein pulsierendes „LÄUFT / BEREIT“-Badge, ein Ring mit der verstrichenen Zeit und eine Leistungsanzeige, die die Einheit selbst wählt (`1950 W` erscheint als `1,95 kW`; hängt ein Stromsensor dran, heißt die Beschriftung automatisch „Stromaufnahme“).
 - **Letzter Durchgang** – Startzeit („Heute, 09:55“), Dauer, Verbrauch und Kosten. Jede Spalte öffnet per Tippen den More-Info-Dialog.
 - **Schnellzugriffe** – Buttons in der Kopfzeile schalten die Steckdose und die Benachrichtigungs-Automatisierung und öffnen den Leistungsverlauf.
-- **Sechs Sprachen** – Deutsch, Englisch, Russisch, Französisch, Niederländisch und Portugiesisch von Haus aus. Die Sprache folgt deinem Home-Assistant-Profil oder wird mit `language: de | en | ru | fr | nl | pt` fest gesetzt.
+- **Sieben Sprachen** – Deutsch, Englisch, Russisch, Französisch, Niederländisch, Portugiesisch und Griechisch von Haus aus. Die Sprache folgt deinem Home-Assistant-Profil oder wird mit `language: de | en | ru | fr | nl | pt | el` fest gesetzt.
 - **Visueller Editor** – die Karte liefert ein Konfigurationsformular mit, lässt sich also ohne YAML über die Oberfläche einrichten.
 - **Keine Abhängigkeiten** – eine einzige Vanilla-JS-Datei mit Shadow DOM. Alle Entity-Optionen außer `status_entity` sind optional, Blöcke ohne Entity werden einfach ausgeblendet. Passt sich der Breite an – von der vollen Dashboard-Spalte bis zum schmalen Handy-Layout.
 
@@ -106,6 +106,7 @@ image_tap_action:                                  # Tippen auf die Illustration
   action: navigate
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # Anzeige + Laufterkennung
+remaining_entity: sensor.washing_machine_remaining # optional: Restzeit oder Endzeit
 power_threshold: 10                                # darüber gilt das Gerät als laufend
 standby_threshold: 1                               # optional: Gerät an, kein Durchgang → STANDBY
 power_max: 2500                                    # Maximum der Anzeige
@@ -118,7 +119,7 @@ show_raw_status: false                             # Zeigt den Rohwert der Statu
 duration_format: minutes                           # minutes / hhmm
 confirm_plug_off: true                             # Zeigt ein Bestätigungs-Popup an, bevor die `plug_entity` ausgeschaltet wird
 currency: "€"
-language: de                                       # auto / de / en / ru / fr / nl / pt (auto = HA-Sprache folgen)
+language: de                                       # auto / de / en / ru / fr / nl / pt / el (auto = HA-Sprache folgen)
 theme: auto                                        # auto / light / dark / ha
 ```
 
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `notify_entity` | nein | – | Automatisierung, `switch` oder `input_boolean` für die Benachrichtigung „Durchgang beendet“. Tippen schaltet um. |
 | `image_tap_action` | nein | – | Was ein Tippen auf die Geräte-Illustration auslöst – mit den Standard-[Aktionen](https://www.home-assistant.io/dashboards/actions/) von Home Assistant: `navigate`, `url`, `more-info`, `perform-action` usw. Nicht gesetzt: Tippen bewirkt nichts. |
 | `power_entity` | nein | – | Sensor für Leistung (W) oder Strom (A): rote Skala, Wertanzeige, und er unterscheidet einen laufenden Durchgang von einer Pause – siehe `power_threshold`. |
+| `remaining_entity` | nein | – | Quelle für die Restzeit. Akzeptiert Minuten als Zahl, Dauern in üblichen HA-Einheiten (auch Millisekunden), einen Zeitstempel für das Ende, ein `input_datetime` nur mit Uhrzeit oder `H:MM:SS` / `H:MM`. Während ein Durchgang läuft, ersetzt ein gültiger Wert die vergangene Zeit im Ring und in der Geräteanzeige; ist der Wert nicht verfügbar oder unlesbar, bleibt die vergangene Zeit. |
 | `power_threshold` | nein | `10` | Mit einem `power_entity` wird ein laufender Durchgang, der weniger als diesen Wert zieht, als **Pause** angezeigt statt als laufend. Ohne den Sensor kann die Karte beides nicht unterscheiden, und allein `status_entity` entscheidet. |
 | `standby_threshold` | nein | – | Mit einem `power_entity`: läuft kein Durchgang, zieht das Gerät aber noch mehr als diesen Wert (W), zeigt die Karte **Standby** statt Aus – praktisch, wenn die Steckdose immer an ist und das Gerät nach dem Durchgang nicht ausgeschaltet wurde. Knapp über dem Wert wählen, den die Steckdose bei ausgeschaltetem Gerät meldet (meist `0`–`1`). Nicht gesetzt: kein Standby-Zustand. |
 | `power_max` | nein | `2500` | Maximum der Skala, in Einheiten von `power_entity`. |
@@ -139,12 +141,12 @@ theme: auto                                        # auto / light / dark / ha
 | `energy_entity` | nein | – | Energie pro Durchgang, kWh. |
 | `cost_entity` | nein | – | Kosten pro Durchgang. |
 | `currency` | nein | `€` | Währungssymbol für die Kostenspalte. |
-| `running_states` | nein | on, washing, waschen, run, schleudern, … | Zustände von `status_entity`, die als „laufend“ gelten (deutsche, englische, russische, französische, niederländische und portugiesische Zustände werden erkannt). |
+| `running_states` | nein | on, washing, waschen, run, schleudern, … | Zustände von `status_entity`, die als „laufend“ gelten (deutsche, englische, russische, französische, niederländische, portugiesische und griechische Zustände werden erkannt). |
 | `hide_status_panel` | nein | false | Statusanzeige nur ausblenden, wenn inaktiv. |
 | `show_raw_status` | nein | false | Zeigt den Rohwert von `status_entity` im Statusbereich der Karte an. Dies ist nützlich, wenn ein Smart-Gerät seinen Status direkt übermittelt. Der Status muss weiterhin mit einem der in `running_states` definierten Werte übereinstimmen.|
 | `duration_format` | nein | minutes | `minutes`, `hhmm`. Formatiert die Dauer des letzten Durchgangs. Ist `duration_format` auf `hhmm` gesetzt und dauert der Durchgang 60 Minuten oder länger, wird der Wert im Format HHhMM angezeigt (zum Beispiel 1h05). |
 | `confirm_plug_off` | nein | true | Zeigt ein Bestätigungs-Popup an, bevor die `plug_entity` ausgeschaltet wird. |
-| `language` | nein | `auto` | `auto`, `de`, `en`, `ru`, `fr`, `nl` oder `pt`. |
+| `language` | nein | `auto` | `auto`, `de`, `en`, `ru`, `fr`, `nl`, `pt` oder `el`. |
 | `theme` | nein | `auto` | `auto`, `light` und `dark` verwenden das eigene Styling der Karte. `ha` übernimmt stattdessen die Farben deines Home Assistant-Themes. |
 
 ## 🧺 Gerätetypen
@@ -157,7 +159,7 @@ theme: auto                                        # auto / light / dark / ha
 | `oven` | Backofen | Backt |
 | `microwave` | Mikrowelle | Erwärmt |
 
-Titel und Texte sind in alle sechs Sprachen übersetzt; `name` überschreibt den Titel.
+Titel und Texte sind in alle sieben Sprachen übersetzt; `name` überschreibt den Titel.
 
 ## 🧠 So funktioniert es mit einem nicht smarten Gerät
 

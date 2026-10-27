@@ -16,7 +16,7 @@ Een op Oikos geïnspireerde Lovelace-kaart die een *domme* wasmachine, droger, v
 - **Live status** — een pulserend "BEZIG / INACTIEF"-badge, een ring met verstreken tijd en een vermogensmeter met automatische eenheidsafhandeling (`1950 W` wordt getoond als `1,95 kW`; een sensor in ampère krijgt automatisch het label "Huidig verbruik").
 - **Samenvatting laatste cyclus** — starttijd ("Vandaag, 09:55"), duur, energie en kosten, elke kolom aantikbaar voor meer info.
 - **Snelle acties** — knoppen in de header schakelen de smart plug en de meldingsautomatisering, en openen de vermogensgeschiedenis.
-- **Zes talen** — Nederlandse, Engelse, Russische, Duitse, Franse en Portugese labels standaard aanwezig. De taal volgt je Home Assistant-profiel, of stel `language: nl | en | ru | de | fr | pt` expliciet in.
+- **Zeven talen** — Nederlandse, Engelse, Russische, Duitse, Franse, Portugese en Griekse labels standaard aanwezig. De taal volgt je Home Assistant-profiel, of stel `language: nl | en | ru | de | fr | pt | el` expliciet in.
 - **Visuele editor** — de kaart heeft een configuratieformulier, dus je kunt 'm via de UI instellen zonder YAML aan te raken.
 - **Geen afhankelijkheden** — één vanilla-JS-bestand met Shadow DOM. Elke entiteitsoptie behalve `status_entity` is optioneel: blokken zonder entiteit worden gewoon verborgen. Past zich aan de breedte aan, van een volledige dashboardkolom tot een smalle weergave op een telefoon.
 
@@ -106,6 +106,7 @@ image_tap_action:                                  # tik op de illustratie (opti
   action: navigate
   navigation_path: /lovelace/laundry
 power_entity: sensor.washing_machine_power         # meter + detectie van draaien
+remaining_entity: sensor.washing_machine_remaining # optioneel: resterende tijd of eindtijd
 power_threshold: 10                                # loopt boven deze waarde
 standby_threshold: 1                               # optioneel: apparaat aan, geen cyclus → STAND-BY
 power_max: 2500                                    # maximum van de meter
@@ -118,7 +119,7 @@ show_raw_status: false                             # Toont de ruwe waarde van de
 duration_format: minutes                           # minutes / hhmm
 confirm_plug_off: true                             # toont een bevestigingspopup voordat `plug_entity` wordt uitgeschakeld
 currency: "€"
-language: nl                                       # auto / nl / en / ru / de / fr / pt (auto = volgt Home Assistant)
+language: nl                                       # auto / nl / en / ru / de / fr / pt / el (auto = volgt Home Assistant)
 theme: auto                                        # auto / light / dark / ha
 ```
 
@@ -131,6 +132,7 @@ theme: auto                                        # auto / light / dark / ha
 | `notify_entity` | nee | — | Automatisering/schakelaar/input_boolean voor de melding "cyclus voltooid"; tikken schakelt hem. |
 | `image_tap_action` | nee | — | Wat een tik op de illustratie van het apparaat doet, met de standaard [acties](https://www.home-assistant.io/dashboards/actions/) van Home Assistant: `navigate`, `url`, `more-info`, `perform-action` enzovoort. Niet ingesteld: tikken doet niets. |
 | `power_entity` | nee | — | Vermogen- (W) of stroomsensor (A): rode meter, waardeweergave, en hij onderscheidt een lopende cyclus van een gepauzeerde — zie `power_threshold`. |
+| `remaining_entity` | nee | — | Bron voor de resterende tijd. Accepteert minuten als getal, een duur in gangbare HA-eenheden (ook milliseconden), een tijdstempel voor het einde, een `input_datetime` met alleen een tijd, of `H:MM:SS` / `H:MM`. Tijdens een cyclus vervangt een geldige waarde de verstreken tijd in de ring en op het display van het apparaat; is de waarde niet beschikbaar of onleesbaar, dan blijft de verstreken tijd staan. |
 | `power_threshold` | nee | `10` | Met een `power_entity` wordt een lopende cyclus die minder dan deze waarde verbruikt weergegeven als **gepauzeerd** in plaats van lopend. Zonder die sensor ziet de kaart het verschil niet en beslist alleen `status_entity`. |
 | `standby_threshold` | nee | — | Met een `power_entity`: loopt er geen cyclus maar verbruikt het apparaat nog meer dan deze waarde (W), dan toont de kaart **stand-by** in plaats van uit — handig als de stekker altijd aan staat en het apparaat na de cyclus niet is uitgezet. Kies een waarde net boven wat de stekker meldt met het apparaat uit (vaak `0`–`1`). Niet ingesteld: geen stand-by. |
 | `power_max` | nee | `2500` | Maximum van de meter, in de eenheid van `power_entity`. |
@@ -139,12 +141,12 @@ theme: auto                                        # auto / light / dark / ha
 | `energy_entity` | nee | — | Energie per cyclus, kWh. |
 | `cost_entity` | nee | — | Kosten per cyclus. |
 | `currency` | nee | `€` | Valutasymbool voor de kostenkolom. |
-| `running_states` | nee | on, washing, wassen, run, centrifugeren, … | Statussen van `status_entity` die als "loopt" worden beschouwd (Nederlandse, Engelse, Russische, Duitse, Franse en Portugese statussen worden herkend). |
+| `running_states` | nee | on, washing, wassen, run, centrifugeren, … | Statussen van `status_entity` die als "loopt" worden beschouwd (Nederlandse, Engelse, Russische, Duitse, Franse, Portugese en Griekse statussen worden herkend). |
 | `hide_status_panel` | nee | false | Verbergt het statuspaneel zolang het apparaat inactief is, en toont het weer zodra een cyclus start. |
 | `show_raw_status` | nee | false | Toont de ruwe waarde van `status_entity` in het statuspaneel van de kaart. Dit is handig wanneer een slim apparaat zijn status rechtstreeks doorstuurt. De status moet nog steeds overeenkomen met een van de waarden die zijn gedefinieerd in `running_states`.|
 | `duration_format` | nee | minutes | `minutes`, `hhmm`. Bepaalt de opmaak van de duur van de laatste cyclus. Als `duration_format` op `hhmm` staat en de duur 60 minuten of langer is, wordt de waarde weergegeven in HHhMM-formaat (bijvoorbeeld 1h05). |
 | `confirm_plug_off` | nee | true | Toont een bevestigingspopup voordat `plug_entity` wordt uitgeschakeld. |
-| `language` | nee | `auto` | `auto`, `nl`, `en`, `ru`, `de`, `fr` of `pt`. |
+| `language` | nee | `auto` | `auto`, `nl`, `en`, `ru`, `de`, `fr`, `pt` of `el`. |
 | `theme` | nee | `auto` | `auto`, `light` en `dark` gebruiken de eigen styling van de kaart. `ha` neemt in plaats daarvan de kleuren van je Home Assistant-thema over. |
 
 ## 🧺 Apparaattypen
@@ -157,7 +159,7 @@ theme: auto                                        # auto / light / dark / ha
 | `oven` | Oven | Bakt |
 | `microwave` | Magnetron | Verwarmt |
 
-Titels en labels zijn vertaald naar alle zes de talen; `name` overschrijft de titel.
+Titels en labels zijn vertaald naar alle zeven talen; `name` overschrijft de titel.
 
 ## 🧠 Hoe het werkt met een dom apparaat
 
