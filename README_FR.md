@@ -38,7 +38,7 @@ Deux étapes : d'abord la carte elle-même, puis les entités qu'elle affiche.
 2. Ajoutez une ressource au tableau de bord (Paramètres → Tableaux de bord → Ressources, ou `lovelace: resources:` en mode YAML) :
 
    ```yaml
-   url: /local/washing-machine-card.js?v=6
+   url: /local/washing-machine-card.js?v=7
    type: module
    ```
 

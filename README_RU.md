@@ -38,7 +38,7 @@ Lovelace-карточка в стиле Oikos, которая превращае
 2. Добавьте ресурс панели (Настройки → Панели → Ресурсы, либо `lovelace: resources:` в yaml-режиме):
 
    ```yaml
-   url: /local/washing-machine-card.js?v=6
+   url: /local/washing-machine-card.js?v=7
    type: module
    ```
 

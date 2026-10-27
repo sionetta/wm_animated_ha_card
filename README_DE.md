@@ -38,7 +38,7 @@ Zwei Schritte: zuerst die Karte selbst, dann die Entitäten, die sie anzeigt.
 2. Füge eine Dashboard-Ressource hinzu (Einstellungen → Dashboards → Ressourcen oder `lovelace: resources:` im YAML-Modus):
 
    ```yaml
-   url: /local/washing-machine-card.js?v=6
+   url: /local/washing-machine-card.js?v=7
    type: module
    ```
 

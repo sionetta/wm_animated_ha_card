@@ -38,7 +38,7 @@ Two steps: first the card itself, then the entities it displays.
 2. Add a dashboard resource (Settings → Dashboards → Resources, or `lovelace: resources:` in YAML mode):
 
    ```yaml
-   url: /local/washing-machine-card.js?v=6
+   url: /local/washing-machine-card.js?v=7
    type: module
    ```
 

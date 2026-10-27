@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.5.0] — 2026-10-27
 
 ### Added
 - **`remaining_entity`** — optional generic remaining-time input for the ring and
@@ -34,9 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   appliance still draws more than this many watts, the card shows *Standby*
   instead of *Off* (and keeps the status panel visible even with
   `hide_status_panel`). Opt-in: not set by default, so plugs that report a little
-  noise with the appliance off keep showing *Off*. Translated into all six
-  languages and available in the visual editor. Based on a patch by
+  noise with the appliance off keep showing *Off*. Translated into every
+  UI language and available in the visual editor. Based on a patch by
   [@entdgc](https://github.com/entdgc) (#29).
+- **Ko-fi link** — a *Sponsor* button on the repository page and a short
+  "Support the project" section at the end of every README, for anyone who'd
+  like to say thanks. The card itself is unchanged and stays free.
 
 ## [1.4.0] — 2026-10-03
 

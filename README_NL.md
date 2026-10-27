@@ -38,7 +38,7 @@ Twee stappen: eerst de kaart zelf, dan de entiteiten die hij toont.
 2. Voeg een dashboardresource toe (Instellingen → Dashboards → Bronnen, of `lovelace: resources:` in YAML-modus):
 
    ```yaml
-   url: /local/washing-machine-card.js?v=6
+   url: /local/washing-machine-card.js?v=7
    type: module
    ```
 
