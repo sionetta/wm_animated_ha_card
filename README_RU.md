@@ -97,7 +97,7 @@ Lovelace-карточка в стиле Oikos, которая превращае
 
 ```yaml
 type: custom:washing-machine-card
-appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave
+appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave | hood
 name: Стиральная машина
 status_entity: binary_sensor.washing_in_progress   # ОБЯЗАТЕЛЬНЫЙ
 plug_entity: switch.washing_machine_plug           # кнопка «Розетка», тап = переключить
@@ -126,7 +126,10 @@ theme: auto                                        # auto / light / dark / ha
 | Параметр | Обязателен | По умолчанию | Описание |
 |---|---|---|---|
 | `status_entity` | **да** | — | Сущность, состояние которой означает работающий цикл. Отлично подходит шаблонный `binary_sensor` по мощности или току розетки; текстовые состояния (`washing`, `отжим`, …) сопоставляются через `running_states`. |
-| `appliance_type` | нет | `washer` | Внешний вид и подписи: `washer`, `dryer` (алиас `tumbler`), `dishwasher`, `oven` или `microwave`. |
+| `appliance_type` | нет | `washer` | Внешний вид и подписи: `washer`, `dryer` (алиас `tumbler`), `dishwasher`, `oven` или `microwave` (beta: `hood`). |
+| `fan_entity` | нет | — | Только для вытяжки. Скорость вентилятора: select с номерами ступеней (Home Connect `FanStage02` → 2), select с вариантами вроде off / low / medium / high (уровень по порядку), сущность `fan` (проценты и ступени) или число. Показывается в кольце и задаёт скорость вращения вентилятора. |
+| `intensive_entity` | нет | — | Только для вытяжки. Интенсивный режим: select со ступенями (Home Connect `IntensiveStage1`), число или выключатель. |
+| `light_entity` | нет | — | Только для вытяжки. Пока этот свет (или выключатель) включён, на картинке горят лампы. |
 | `name` | нет | по языку | Название карточки (по умолчанию зависит от `appliance_type`). |
 | `plug_entity` | нет | — | Выключатель умной розетки; показывается кнопкой в шапке, тап переключает. |
 | `notify_entity` | нет | — | Автоматизация / switch / input_boolean уведомления об окончании цикла; тап переключает. |
@@ -158,6 +161,7 @@ theme: auto                                        # auto / light / dark / ha
 | `dishwasher` | Посудомойка | Моет посуду |
 | `oven` | Духовка | Выпечка |
 | `microwave` | Микроволновка | Разогрев |
+| `hood` *(бета)* | Вытяжка | Работает |
 
 Названия и подписи переведены на все семь языков; параметр `name` перекрывает название.
 
@@ -193,6 +197,27 @@ show_raw_status: true
 В [`examples/smart_appliance.yaml`](examples/smart_appliance.yaml) — полная версия,
 включая прогресс, время окончания и состояние дверцы, для которых у карточки нет
 отдельных параметров, а также пояснения, какие блоки останутся пустыми и почему.
+
+## 🌀 Вытяжка (бета)
+
+`appliance_type: hood` показывает кухонную вытяжку вместо прибора с циклами. Вытяжка Bosch / Siemens / Neff через [Home Connect](https://www.home-assistant.io/integrations/home_connect/):
+
+```yaml
+type: custom:washing-machine-card
+appliance_type: hood
+status_entity: sensor.hood_operation_state         # run / inactive
+fan_entity: select.hood_venting_level              # FanOff, FanStage01, FanStage02 …
+intensive_entity: select.hood_intensive_level      # необязательно
+light_entity: light.hood_functional_light          # необязательно
+plug_entity: switch.hood_power                     # необязательно: кнопка питания
+```
+
+- В кольце — **скорость вентилятора** (`2/3`) или ступень интенсивного режима, дуга заполняется соответственно. На дисплее вытяжки — сколько она уже работает.
+- С каждой скоростью вентилятор крутится быстрее, в интенсивном режиме — ещё быстрее; свет зажигает лампы на картинке, даже когда вентилятор выключен.
+- Не только Home Connect: в `fan_entity` подойдёт любой select, `fan` или число (см. таблицу выше).
+- Панели «Последний цикл» нет — у вытяжки нет циклов.
+
+Это бета-версия: отзывы ждём в [#31](https://github.com/sionetta/wm_animated_ha_card/issues/31).
 
 ## 📝 История изменений
 

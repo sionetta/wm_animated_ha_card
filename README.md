@@ -97,7 +97,7 @@ The card only displays data, and `status_entity` is required, so this step canno
 
 ```yaml
 type: custom:washing-machine-card
-appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave
+appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave | hood
 name: Washing machine
 status_entity: binary_sensor.washing_in_progress   # REQUIRED
 plug_entity: switch.washing_machine_plug           # plug button, tap = toggle
@@ -126,7 +126,10 @@ theme: auto                                        # auto / light / dark / ha
 | Option | Required | Default | Description |
 |---|---|---|---|
 | `status_entity` | **yes** | — | Entity whose state marks a running cycle. A template `binary_sensor` on the plug's power/current works great; textual states (`washing`, `spin`, …) are matched via `running_states`. |
-| `appliance_type` | no | `washer` | Visual + labels: `washer`, `dryer` (alias `tumbler`), `dishwasher`, `oven` or `microwave`. |
+| `appliance_type` | no | `washer` | Visual + labels: `washer`, `dryer` (alias `tumbler`), `dishwasher`, `oven` or `microwave` (beta: `hood`). |
+| `fan_entity` | no | — | Hood only. Fan speed: a select with numbered stages (Home Connect `FanStage02` → 2), a select with named options such as off / low / medium / high (counted by position), a `fan` entity (percentage and steps) or a number. Shown in the ring and sets how fast the fan spins. |
+| `intensive_entity` | no | — | Hood only. Intensive / boost mode: a select with stages (Home Connect `IntensiveStage1`), a number, or a switch. |
+| `light_entity` | no | — | Hood only. The illustration lights up while this light (or switch) is on. |
 | `name` | no | localized | Card title (defaults depend on `appliance_type`). |
 | `plug_entity` | no | — | Smart plug switch; shown as a header button, tap toggles it. |
 | `notify_entity` | no | — | Automation/switch/input_boolean for the "cycle finished" notification; tap toggles it. |
@@ -158,6 +161,7 @@ theme: auto                                        # auto / light / dark / ha
 | `dishwasher` | Dishwasher | Washing dishes |
 | `oven` | Oven | Baking |
 | `microwave` | Microwave | Heating |
+| `hood` *(beta)* | Cooker hood | Extracting |
 
 Titles and labels are translated into all seven languages; `name` overrides the title.
 
@@ -192,6 +196,27 @@ really means "running", otherwise a paused or powered-but-idle appliance reads a
 [`examples/smart_appliance.yaml`](examples/smart_appliance.yaml) has the full version,
 including the progress, finish time and door values the card has no options for, plus
 notes on what stays empty and why.
+
+## 🌀 Cooker hood (beta)
+
+`appliance_type: hood` shows an extractor hood instead of a cycle-based appliance. A Bosch / Siemens / Neff hood via [Home Connect](https://www.home-assistant.io/integrations/home_connect/):
+
+```yaml
+type: custom:washing-machine-card
+appliance_type: hood
+status_entity: sensor.hood_operation_state         # run / inactive
+fan_entity: select.hood_venting_level              # FanOff, FanStage01, FanStage02 …
+intensive_entity: select.hood_intensive_level      # optional
+light_entity: light.hood_functional_light          # optional
+plug_entity: switch.hood_power                     # optional: power button
+```
+
+- The ring shows the **fan speed** (`2/3`), or the intensive stage, and its arc fills accordingly. The hood's own display shows how long it has been running.
+- The fan spins faster at each speed and faster still in intensive mode; the light lights up the illustration even with the fan off.
+- Not tied to Home Connect: any select, `fan` or number entity works as `fan_entity` (see the table above).
+- There is no *Last cycle* panel — a hood has no cycles.
+
+This is a beta: feedback is welcome in [#31](https://github.com/sionetta/wm_animated_ha_card/issues/31).
 
 ## 📝 Changelog
 

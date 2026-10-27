@@ -4,6 +4,21 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Cooker hood (beta)** — `appliance_type: hood`, the first appliance without
+  cycles. A chimney hood with a fan that spins faster at each speed (and faster
+  still in intensive mode), rising air while it runs and lamps that light up with
+  the hood's light. The ring shows the fan speed (`2/3`) or the intensive stage,
+  with an arc that fills accordingly; the hood's display shows how long it has
+  been running; the *Last cycle* panel is not shown. New options `fan_entity`,
+  `intensive_entity` and `light_entity` work with Home Connect (`FanStage02`,
+  `IntensiveStage1`) as well as any select with named options, `fan` entities
+  (percentage and steps) and numbers. Labels in all seven languages, fields in
+  the visual editor, and `examples/hood_home_connect.yaml`. Requested by
+  [@nsenica](https://github.com/nsenica) (#31).
+
 ## [1.5.0] — 2026-10-27
 
 ### Added

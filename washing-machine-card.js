@@ -7,7 +7,7 @@
  *
  * https://github.com/sionetta/wm_animated_ha_card
  * License: MIT
- * Version: 1.5.0
+ * Version: 1.6.0-beta.1
  *
  * UI languages: en, ru, de, fr, nl, pt, el (auto-detected from Home Assistant, or set `language:`).
  * Appliances: washer, dryer, dishwasher, oven, microwave (`appliance_type:`).
@@ -26,14 +26,35 @@
  */
 
 class WashingMachineCard extends HTMLElement {
-    static APPLIANCE_TYPES = ["washer", "dryer", "dishwasher", "oven", "microwave"];
+    static APPLIANCE_TYPES = ["washer", "dryer", "dishwasher", "oven", "microwave", "hood"];
+
+    // One hood fan blade around the origin, pointing up: a smooth egg-shaped paddle that is
+    // narrow at the hub and wide at the rim, swept slightly sideways. Built from sampled
+    // points so the outline has no corners.
+    static HOOD_BLADE = (() => {
+        const pts = [];
+        const c = 14, b = 10.8, a = 16;
+        for (let i = 0; i < 72; i++) {
+            const t = (i / 72) * Math.PI * 2;
+            const y0 = b * Math.sin(t);
+            const s = (y0 + b) / (2 * b);               // 0 at the hub end, 1 at the rim
+            const x = a * Math.cos(t) * (0.3 + 0.7 * Math.pow(s, 0.6)) + 1.8 * s;
+            const r = c + y0;
+            const sweep = 0.3 * s;
+            // Mirrored so the tips lean counter-clockwise and trail a clockwise spin.
+            const px = -(x * Math.cos(sweep) + r * Math.sin(sweep));
+            const py = -(r * Math.cos(sweep) - x * Math.sin(sweep));
+            pts.push(`${px.toFixed(2)} ${py.toFixed(2)}`);
+        }
+        return `M${pts.join(" L")} Z`;
+    })();
 
     static STRINGS = {
         en: {
             name: "Washing machine",
             badge_running: "RUNNING", badge_idle: "IDLE", badge_paused: "PAUSED", badge_off: "OFF", badge_standby: "STANDBY", badge_nodata: "NO DATA",
             state_running: "Washing", state_idle: "Idle", state_paused: "Paused", state_off: "Off", state_standby: "Standby", state_nodata: "No data",
-            ring_running: "ELAPSED", ring_idle: "IDLE", ring_paused: "PAUSED", ring_off: "OFF", ring_standby: "STANDBY", ring_remaining: "REMAINING",
+            ring_running: "ELAPSED", ring_idle: "IDLE", ring_paused: "PAUSED", ring_off: "OFF", ring_standby: "STANDBY", ring_remaining: "REMAINING", ring_fan: "SPEED", ring_intensive: "INTENSIVE",
             power: "Current power", current: "Current draw",
             last_cycle: "LAST CYCLE", start: "START", duration: "DURATION",
             energy: "ENERGY", cost: "COST",
@@ -47,6 +68,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Dishwasher", state_running: "Washing dishes" },
                 oven: { name: "Oven", state_running: "Baking" },
                 microwave: { name: "Microwave", state_running: "Heating" },
+                hood: { name: "Cooker hood", state_running: "Extracting" },
             },
             running_states: [
                 "washing", "running", "run", "wash", "spin", "rinse", "drying", "dry", "tumble",
@@ -57,7 +79,7 @@ class WashingMachineCard extends HTMLElement {
             name: "Стиральная машина",
             badge_running: "В РАБОТЕ", badge_idle: "ОЖИДАНИЕ", badge_paused: "ПАУЗА", badge_off: "ВЫКЛ", badge_standby: "ОЖИДАНИЕ", badge_nodata: "НЕТ ДАННЫХ",
             state_running: "Идёт стирка", state_idle: "Ожидание", state_paused: "Пауза", state_off: "Выключено", state_standby: "Режим ожидания", state_nodata: "Нет данных",
-            ring_running: "ПРОШЛО", ring_idle: "ОЖИДАНИЕ", ring_paused: "ПАУЗА", ring_off: "ВЫКЛ", ring_standby: "ОЖИДАНИЕ", ring_remaining: "ОСТАЛОСЬ",
+            ring_running: "ПРОШЛО", ring_idle: "ОЖИДАНИЕ", ring_paused: "ПАУЗА", ring_off: "ВЫКЛ", ring_standby: "ОЖИДАНИЕ", ring_remaining: "ОСТАЛОСЬ", ring_fan: "СКОРОСТЬ", ring_intensive: "ИНТЕНСИВ",
             power: "Текущая мощность", current: "Текущий ток",
             last_cycle: "ПОСЛЕДНИЙ ЦИКЛ", start: "СТАРТ", duration: "ДЛИТЕЛЬН.",
             energy: "РАСХОД", cost: "СТОИМОСТЬ",
@@ -71,6 +93,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Посудомойка", state_running: "Моет посуду" },
                 oven: { name: "Духовка", state_running: "Выпечка" },
                 microwave: { name: "Микроволновка", state_running: "Разогрев" },
+                hood: { name: "Вытяжка", state_running: "Работает" },
             },
             running_states: [
                 "стирка", "отжим", "полоскание",
@@ -80,7 +103,7 @@ class WashingMachineCard extends HTMLElement {
             name: "Waschmaschine",
             badge_running: "LÄUFT", badge_idle: "BEREIT", badge_paused: "PAUSE", badge_off: "AUS", badge_standby: "STANDBY", badge_nodata: "KEINE DATEN",
             state_running: "Läuft", state_idle: "Bereit", state_paused: "Pause", state_off: "Aus", state_standby: "Standby", state_nodata: "Keine Daten",
-            ring_running: "VERGANGEN", ring_idle: "BEREIT", ring_paused: "PAUSE", ring_off: "AUS", ring_standby: "STANDBY", ring_remaining: "RESTZEIT",
+            ring_running: "VERGANGEN", ring_idle: "BEREIT", ring_paused: "PAUSE", ring_off: "AUS", ring_standby: "STANDBY", ring_remaining: "RESTZEIT", ring_fan: "STUFE", ring_intensive: "INTENSIV",
             power: "Aktuelle Leistung", current: "Stromaufnahme",
             last_cycle: "LETZTER DURCHGANG", start: "START", duration: "DAUER",
             energy: "VERBRAUCH", cost: "KOSTEN",
@@ -94,6 +117,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Geschirrspüler", state_running: "Spült" },
                 oven: { name: "Backofen", state_running: "Backt" },
                 microwave: { name: "Mikrowelle", state_running: "Erwärmt" },
+                hood: { name: "Dunstabzugshaube", state_running: "Saugt ab" },
             },
             running_states: [
                 "waschen", "läuft", "schleudern", "spülen", "trocknen",
@@ -103,7 +127,7 @@ class WashingMachineCard extends HTMLElement {
         fr: {
             name: "Lave-linge", badge_running: "EN MARCHE", badge_idle: "EN VEILLE", badge_paused: "EN PAUSE", badge_off: "ÉTEINT", badge_standby: "EN VEILLE", badge_nodata: "PAS DE DONNÉES",
             state_running: "Lavage en cours", state_idle: "En veille", state_paused: "En pause", state_off: "Éteint", state_standby: "En veille", state_nodata: "Pas de données",
-            ring_running: "ÉCOULÉ", ring_idle: "VEILLE", ring_paused: "PAUSE", ring_off: "ÉTEINT", ring_standby: "VEILLE", ring_remaining: "RESTANT",
+            ring_running: "ÉCOULÉ", ring_idle: "VEILLE", ring_paused: "PAUSE", ring_off: "ÉTEINT", ring_standby: "VEILLE", ring_remaining: "RESTANT", ring_fan: "VITESSE", ring_intensive: "INTENSIF",
             power: "Puissance actuelle", current: "Courant instantané",
             last_cycle: "DERNIER CYCLE", start: "DÉPART", duration: "DURÉE",
             energy: "ÉNERGIE", cost: "COÛT",
@@ -117,6 +141,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Lave-vaisselle", state_running: "Lavage en cours" },
                 oven: { name: "Four", state_running: "Cuisson en cours" },
                 microwave: { name: "Micro-ondes", state_running: "Réchauffage en cours" },
+                hood: { name: "Hotte", state_running: "Aspiration" },
             },
             running_states: [
                 "lavage", "en cours", "essorage", "rincage", "rinçage",
@@ -127,7 +152,7 @@ class WashingMachineCard extends HTMLElement {
             name: "Wasmachine",
             badge_running: "BEZIG", badge_idle: "INACTIEF", badge_paused: "GEPAUZEERD", badge_off: "UIT", badge_standby: "STAND-BY", badge_nodata: "GEEN DATA",
             state_running: "Wast", state_idle: "Inactief", state_paused: "Gepauzeerd", state_off: "Uit", state_standby: "Stand-by", state_nodata: "Geen data",
-            ring_running: "VERSTREKEN", ring_idle: "INACTIEF", ring_paused: "GEPAUZEERD", ring_off: "UIT", ring_standby: "STAND-BY", ring_remaining: "RESTEREND",
+            ring_running: "VERSTREKEN", ring_idle: "INACTIEF", ring_paused: "GEPAUZEERD", ring_off: "UIT", ring_standby: "STAND-BY", ring_remaining: "RESTEREND", ring_fan: "STAND", ring_intensive: "INTENSIEF",
             power: "Huidig vermogen", current: "Huidig verbruik",
             last_cycle: "LAATSTE CYCLUS", start: "START", duration: "DUUR",
             energy: "ENERGIE", cost: "KOSTEN",
@@ -141,6 +166,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Vaatwasser", state_running: "Wast af" },
                 oven: { name: "Oven", state_running: "Bakt" },
                 microwave: { name: "Magnetron", state_running: "Verwarmt" },
+                hood: { name: "Afzuigkap", state_running: "Zuigt af" },
             },
             running_states: [
                 "wassen", "bezig", "centrifugeren", "spoelen", "drogen",
@@ -151,7 +177,7 @@ class WashingMachineCard extends HTMLElement {
             name: "Máquina de lavar",
             badge_running: "EM ANDAMENTO", badge_idle: "EM ESPERA", badge_paused: "EM PAUSA", badge_off: "DESLIGADO", badge_standby: "EM ESPERA", badge_nodata: "SEM DADOS",
             state_running: "Lavando", state_idle: "Em espera", state_paused: "Em pausa", state_off: "Desligado", state_standby: "Em espera", state_nodata: "Sem dados",
-            ring_running: "DECORRIDO", ring_idle: "EM ESPERA", ring_paused: "EM PAUSA", ring_off: "DESLIGADO", ring_standby: "EM ESPERA", ring_remaining: "RESTANTE",
+            ring_running: "DECORRIDO", ring_idle: "EM ESPERA", ring_paused: "EM PAUSA", ring_off: "DESLIGADO", ring_standby: "EM ESPERA", ring_remaining: "RESTANTE", ring_fan: "NÍVEL", ring_intensive: "INTENSIVO",
             power: "Potência atual", current: "Corrente atual",
             last_cycle: "ÚLTIMO CICLO", start: "INÍCIO", duration: "DURAÇÃO",
             energy: "ENERGIA", cost: "CUSTO",
@@ -165,6 +191,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Lava-louças", state_running: "Lavando louças" },
                 oven: { name: "Forno", state_running: "Assando" },
                 microwave: { name: "Micro-ondas", state_running: "Aquecendo" },
+                hood: { name: "Exaustor", state_running: "Aspirando" },
             },
             running_states: [
                 "lavando", "lavagem", "lavagem longa", "lavagem normal", "lavagem curta", "em andamento", "rodando",
@@ -177,7 +204,7 @@ class WashingMachineCard extends HTMLElement {
             name: "Πλυντήριο ρούχων",
             badge_running: "ΣΕ ΛΕΙΤΟΥΡΓΙΑ", badge_idle: "ΑΝΑΜΟΝΗ", badge_paused: "ΠΑΥΣΗ", badge_off: "ΕΚΤΟΣ", badge_standby: "ΑΝΑΜΟΝΗ", badge_nodata: "ΧΩΡΙΣ ΔΕΔΟΜΕΝΑ",
             state_running: "Πλύση", state_idle: "Αναμονή", state_paused: "Σε παύση", state_off: "Εκτός λειτουργίας", state_standby: "Κατάσταση αναμονής", state_nodata: "Χωρίς δεδομένα",
-            ring_running: "ΠΑΡΗΛΘΕ", ring_idle: "ΑΝΑΜΟΝΗ", ring_paused: "ΠΑΥΣΗ", ring_off: "ΕΚΤΟΣ", ring_standby: "ΑΝΑΜΟΝΗ", ring_remaining: "ΑΠΟΜΕΝΕΙ",
+            ring_running: "ΠΑΡΗΛΘΕ", ring_idle: "ΑΝΑΜΟΝΗ", ring_paused: "ΠΑΥΣΗ", ring_off: "ΕΚΤΟΣ", ring_standby: "ΑΝΑΜΟΝΗ", ring_remaining: "ΑΠΟΜΕΝΕΙ", ring_fan: "ΤΑΧΥΤΗΤΑ", ring_intensive: "ΕΝΤΑΤΙΚΟ",
             power: "Τρέχουσα ισχύς", current: "Τρέχον ρεύμα",
             last_cycle: "ΤΕΛΕΥΤΑΙΟΣ ΚΥΚΛΟΣ", start: "ΕΝΑΡΞΗ", duration: "ΔΙΑΡΚΕΙΑ",
             energy: "ΕΝΕΡΓΕΙΑ", cost: "ΚΟΣΤΟΣ",
@@ -191,6 +218,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Πλυντήριο πιάτων", state_running: "Πλύσιμο πιάτων" },
                 oven: { name: "Φούρνος", state_running: "Ψήσιμο" },
                 microwave: { name: "Φούρνος μικροκυμάτων", state_running: "Ζέσταμα" },
+                hood: { name: "Απορροφητήρας", state_running: "Απορρόφηση" },
             },
             running_states: [
                 "πλύση", "πλυση", "πλύσιμο", "πλυσιμο", "ξέβγαλμα", "ξεβγαλμα", "στύψιμο", "στυψιμο",
@@ -371,7 +399,77 @@ class WashingMachineCard extends HTMLElement {
         const state = status ? String(status.state).toLowerCase() : "";
         const byStatus = !!status && c.running_states.some((k) => String(k).toLowerCase() === state);
         const byBinaryOn = state === "on";
-        return byStatus || byBinaryOn;
+        // A hood is also working whenever its fan turns, even if the status entity lags behind.
+        const byFan = this._applianceType === "hood" &&
+            ((this._hoodLevel(c.fan_entity)?.level || 0) > 0 ||
+             (this._hoodLevel(c.intensive_entity)?.level || 0) > 0);
+        return byStatus || byBinaryOn || byFan;
+    }
+
+    // Reads a fan speed from any common entity shape and returns { level, max, percent }:
+    //   fan.*                     → percentage (and percentage_step, when it describes real steps)
+    //   select / input_select     → the number in the option, e.g. Home Connect "FanStage02" → 2,
+    //                               "FanOff" → 0; options without numbers count by position
+    //   number / input_number / sensor → the numeric state, max from the "max" attribute
+    // Returns null when the entity is missing, unavailable or unreadable.
+    _hoodLevel(entityId) {
+        const st = this._st(entityId);
+        if (!st)
+            return null;
+        const raw = String(st.state ?? "").trim();
+        const low = raw.toLowerCase();
+        if (!raw || ["unknown", "unavailable", "none"].includes(low))
+            return null;
+        const domain = String(entityId).split(".")[0];
+        const attrs = st.attributes || {};
+        const isOff = (s) => /off$|^aus$|^none$/i.test(String(s).trim());
+        const numIn = (s) => {
+            const m = String(s).match(/(\d+)\s*$/);
+            return m ? Number(m[1]) : null;
+        };
+
+        if (domain === "fan") {
+            if (low === "off")
+                return { level: 0, max: WashingMachineCard._fanSteps(attrs), percent: false };
+            const pct = Number(attrs.percentage);
+            const steps = WashingMachineCard._fanSteps(attrs);
+            if (!Number.isFinite(pct))
+                return { level: low === "on" ? 1 : 0, max: 1, percent: false };
+            if (steps)
+                return { level: Math.round(pct / (100 / steps)), max: steps, percent: false };
+            return { level: Math.round(pct), max: 100, percent: true };
+        }
+
+        const options = Array.isArray(attrs.options) ? attrs.options.map(String) : null;
+        if (options && options.length) {
+            const nums = options.map(numIn);
+            const numbered = options.filter((o, i) => nums[i] !== null || isOff(o)).length === options.length;
+            if (numbered) {
+                const max = Math.max(1, ...nums.filter((n) => n !== null));
+                return { level: isOff(raw) ? 0 : (numIn(raw) ?? 0), max, percent: false };
+            }
+            const idx = options.indexOf(raw);
+            if (idx >= 0)
+                return { level: idx, max: Math.max(1, options.length - 1), percent: false };
+        }
+
+        if (isOff(raw))
+            return { level: 0, max: null, percent: false };
+        if (low === "on")
+            return { level: 1, max: 1, percent: false };
+        const n = Number(raw.replace(",", "."));
+        const num = Number.isFinite(n) ? n : numIn(raw);
+        if (num === null || !Number.isFinite(num))
+            return null;
+        const max = Number(attrs.max);
+        return { level: Math.max(0, Math.round(num)), max: Number.isFinite(max) && max > 0 ? max : null, percent: false };
+    }
+
+    static _fanSteps(attrs) {
+        const step = Number(attrs?.percentage_step);
+        if (Number.isFinite(step) && step >= 5 && step <= 100)
+            return Math.round(100 / step);
+        return null;
     }
 
     _isRunning() {
@@ -579,6 +677,14 @@ class WashingMachineCard extends HTMLElement {
     _startDate() {
         const c = this._config;
         const status = this._st(c.status_entity);
+        if (this._applianceType === "hood") {
+            // No cycles: count from when the status went active, or from the last fan change
+            // while the status entity has not caught up yet.
+            const statusActive = !!status && (String(status.state).toLowerCase() === "on" ||
+                c.running_states.some((k) => String(k).toLowerCase() === String(status.state).toLowerCase()));
+            const src = statusActive ? status : (this._st(c.fan_entity) || this._st(c.intensive_entity) || status);
+            return src ? this._parseDate(src.last_changed) : null;
+        }
         return (
             (c.last_wash_entity && this._parseDate(this._st(c.last_wash_entity)?.state)) ||
             (status && this._parseDate(status.last_changed)) ||
@@ -677,6 +783,17 @@ class WashingMachineCard extends HTMLElement {
           <line x1="17.2" y1="14.4" x2="19.2" y2="14.4"/>
         </svg>`;
         }
+        if (type === "hood") {
+            return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 2.8h5v6.4"/>
+          <path d="M9.5 2.8v6.4"/>
+          <path d="M8.6 9.2h6.8l5.2 6.2H3.4z"/>
+          <rect x="2.6" y="15.4" width="18.8" height="3" rx="1.2"/>
+          <circle cx="12" cy="12.6" r="1.4" fill="#2f80ed" stroke="none"/>
+        </svg>`;
+        }
         return `
       <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
            stroke-linecap="round" stroke-linejoin="round">
@@ -698,6 +815,8 @@ class WashingMachineCard extends HTMLElement {
             return this._svgOven(u);
         if (type === "microwave")
             return this._svgMicrowave(u);
+        if (type === "hood")
+            return this._svgHood(u);
         return this._svgWasher(u);
     }
 
@@ -1097,6 +1216,93 @@ class WashingMachineCard extends HTMLElement {
       </svg>`;
     }
 
+    _svgHood(u) {
+        // Three wide, swept blades on a small dark hub, like a classic fan propeller.
+        const blades = [0, 120, 240].map((a) => `
+            <g transform="rotate(${a})">
+              <path class="hd-blade" fill="url(#${u}-blade)" d="${WashingMachineCard.HOOD_BLADE}"/>
+              <ellipse class="hd-sheen" cx="-1.5" cy="-17" rx="7.5" ry="3" transform="rotate(-4 -1.5 -17)"/>
+            </g>`).join("");
+        const bars = [0, 1, 2, 3, 4].map((i) => `
+          <rect class="hd-lvl" x="${156 + i * 7}" y="${(160 - (i + 1) * 2.2).toFixed(1)}" width="4.4"
+                height="${(4 + (i + 1) * 2.2).toFixed(1)}" rx="1.2"/>`).join("");
+        return `
+      <svg class="machine" id="machine" viewBox="0 0 220 232" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="${u}-body" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#f2f5f9"/>
+            <stop offset="1" stop-color="#d9e0e9"/>
+          </linearGradient>
+          <linearGradient id="${u}-steel" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#e3e8ef"/>
+            <stop offset=".5" stop-color="#f7f9fb"/>
+            <stop offset="1" stop-color="#d3dae3"/>
+          </linearGradient>
+          <radialGradient id="${u}-glass" cx=".38" cy=".32" r=".95">
+            <stop offset="0" stop-color="#31456e"/>
+            <stop offset=".6" stop-color="#1e2c4d"/>
+            <stop offset="1" stop-color="#131d36"/>
+          </radialGradient>
+          <linearGradient id="${u}-beam" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffe9a3" stop-opacity=".8"/>
+            <stop offset="1" stop-color="#ffe9a3" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="${u}-blade" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stop-color="#9aa9bd"/>
+            <stop offset="1" stop-color="#d9e1eb"/>
+          </linearGradient>
+          <clipPath id="${u}-fanclip"><circle cx="110" cy="104" r="26"/></clipPath>
+        </defs>
+        <path class="hd-beam" d="M52 172 L68 172 L88 214 L28 214 Z" fill="url(#${u}-beam)"/>
+        <path class="hd-beam" d="M152 172 L168 172 L192 214 L132 214 Z" fill="url(#${u}-beam)"/>
+        <rect x="30" y="214" width="160" height="9" rx="3" fill="#1a2433"/>
+        <ellipse cx="74" cy="216.5" rx="20" ry="2" fill="#3a4a60"/>
+        <ellipse cx="146" cy="216.5" rx="20" ry="2" fill="#3a4a60"/>
+        <g fill="none" stroke="#6fa0e0" stroke-width="2.6" stroke-linecap="round">
+          <path class="hd-air" d="M84 211 C 78 202, 90 194, 84 185 S 88 177, 86 174"/>
+          <path class="hd-air" d="M110 211 C 104 202, 116 194, 110 185 S 114 177, 112 174"/>
+          <path class="hd-air" d="M136 211 C 130 202, 142 194, 136 185 S 140 177, 138 174"/>
+        </g>
+        <rect x="86" y="4" width="48" height="56" rx="3" fill="url(#${u}-steel)"/>
+        <rect x="86" y="4" width="48" height="56" rx="3" fill="none" stroke="#c7cfda" stroke-width="1.3"/>
+        <line x1="86" y1="32" x2="134" y2="32" stroke="#c7cfda" stroke-width="1.1"/>
+        <path d="M80 58 L140 58 L198 141 L22 141 Z" fill="url(#${u}-body)"/>
+        <path d="M80 58 L140 58 L198 141 L22 141 Z" fill="none" stroke="#c7cfda" stroke-width="1.4"
+              stroke-linejoin="round"/>
+        <circle cx="110" cy="104" r="31" fill="#e3e9f0" stroke="#c2cbd6" stroke-width="1.3"/>
+        <circle cx="110" cy="104" r="26" fill="url(#${u}-glass)"/>
+        <g clip-path="url(#${u}-fanclip)">
+          <g class="hd-fan"><g transform="translate(110 104)">${blades}
+            <circle r="6.6" fill="#4a586c" stroke="#2c3747" stroke-width=".9"/>
+            <circle r="5" fill="none" stroke="#6b7a8f" stroke-width=".6"/>
+            <g stroke="#2c3747" stroke-width=".55">
+              <line x1="0" y1="-4.6" x2="0" y2="4.6"/>
+              <line x1="-4" y1="-2.3" x2="4" y2="2.3"/>
+              <line x1="-4" y1="2.3" x2="4" y2="-2.3"/>
+            </g>
+            <circle r="1.2" fill="#e8eef6"/>
+          </g></g>
+        </g>
+        <circle cx="110" cy="104" r="26" fill="none" stroke="#0d1526" stroke-width="1.6" opacity=".35"/>
+        <ellipse cx="100" cy="93" rx="11" ry="6" fill="#ffffff" opacity=".12" transform="rotate(-24 100 93)"/>
+        <rect x="14" y="140" width="192" height="31" rx="10" fill="url(#${u}-body)"/>
+        <rect x="14" y="140" width="192" height="31" rx="10" fill="none" stroke="#c7cfda" stroke-width="1.4"/>
+        <circle cx="34" cy="155.5" r="4.2" fill="#e9edf3" stroke="#c2cbd6" stroke-width="1.1"/>
+        <circle cx="48" cy="155.5" r="4.2" fill="#e9edf3" stroke="#c2cbd6" stroke-width="1.1"/>
+        <circle class="hd-btn-light" cx="62" cy="155.5" r="4.2" stroke="#c2cbd6" stroke-width="1.1"/>
+        <rect x="80" y="147" width="66" height="17" rx="8.5" fill="#0d1526"/>
+        <text id="dispTime" x="106" y="159.5" text-anchor="middle"
+              font-family="ui-monospace, 'SF Mono', Consolas, monospace"
+              font-size="11" font-weight="700" fill="#e8f1ff" letter-spacing="1">--:--</text>
+        <circle id="dispDot" cx="136" cy="155.5" r="2.4" fill="#22b263"/>
+        <g class="hd-levels">${bars}
+        </g>
+        <ellipse class="hd-lamp" cx="60" cy="171.5" rx="9" ry="2.2"/>
+        <ellipse class="hd-lamp" cx="160" cy="171.5" rx="9" ry="2.2"/>
+      </svg>`;
+    }
+
     _build() {
         const c = this._config;
         const root = this.shadowRoot || this.attachShadow({
@@ -1348,6 +1554,27 @@ class WashingMachineCard extends HTMLElement {
         .running .mw-frame { animation: dash-crawl 3.2s linear infinite; }
         .running .mw-dots { animation: heatPulse 1.4s ease-in-out infinite; }
 
+        .hd-fan { transform-box: view-box; transform-origin: 110px 104px; }
+        .hd-blade { stroke: #7d8ca1; stroke-width: .6; stroke-linejoin: round; opacity: .96; }
+        .hd-sheen { fill: #ffffff; opacity: .22; }
+        .hood-intensive .hd-blade { fill: #f3a95c; stroke: #c9782b; }
+        /* Clockwise like the washer drum; the blade tips are swept back to trail behind. */
+        .running .hd-fan { animation: spin var(--hd-fan-dur, 1.2s) linear infinite; }
+        .hd-air { opacity: 0; stroke-dasharray: 6 9; }
+        .running .hd-air { opacity: .85; animation: airRise var(--hd-air-dur, 1.4s) linear infinite; }
+        .running .hd-air:nth-child(2) { animation-delay: -.45s; }
+        .running .hd-air:nth-child(3) { animation-delay: -.9s; }
+        .hd-beam { opacity: 0; transition: opacity .4s ease; }
+        .hood-light .hd-beam { opacity: 1; }
+        .hd-lamp { fill: #b7c0cb; }
+        .hood-light .hd-lamp { fill: #fff3c4; }
+        .hd-btn-light { fill: #e9edf3; }
+        .hood-light .hd-btn-light { fill: #ffd76a; }
+        .hd-lvl { fill: #3a4a60; }
+        .hd-lvl.on { fill: #22b263; }
+        .hood-intensive .hd-lvl.on { fill: #f0a04b; }
+        @keyframes airRise { to { stroke-dashoffset: -30; } }
+
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes tumble {
           0%, 100% { transform: rotate(-14deg); }
@@ -1405,6 +1632,7 @@ class WashingMachineCard extends HTMLElement {
           .running .ov-frame, .running .ov-food,
           .running .mw-glow, .running .mw-wave, .running .mw-rim,
           .running .mw-mug, .running .mw-frame, .running .mw-dots,
+          .running .hd-fan, .running .hd-air,
           .running .badge .b-dot, .running .ring-anim { animation: none; }
         }
 
@@ -1421,6 +1649,8 @@ class WashingMachineCard extends HTMLElement {
         .ring-arc   { stroke: var(--wm-accent); stroke-linecap: round; }
         .ring-anim  { transform-origin: 48px 48px; }
         .running .ring-anim { animation: spin 1.8s linear infinite; }
+        .hood-mode .ring-anim { animation: none; }
+        .hood-mode .ring-arc { transition: stroke-dasharray .5s ease; }
         .ring-center {
           position: absolute; inset: 0; display: flex; flex-direction: column;
           align-items: center; justify-content: center; text-align: center;
@@ -1580,6 +1810,63 @@ class WashingMachineCard extends HTMLElement {
         }
     }
 
+    // Hood-specific display: fan speed in the ring, spin speed of the impeller, level bars,
+    // intensive mode and the light. Elapsed running time stays on the hood's own display.
+    _updateHood(active) {
+        const c = this._config;
+        const t = this._t;
+        const wrap = this._el("wrap");
+        const fan = this._hoodLevel(c.fan_entity);
+        const intens = this._hoodLevel(c.intensive_entity);
+        const intLevel = active ? (intens?.level || 0) : 0;
+        const intensive = intLevel > 0;
+        const lightOn = this._st(c.light_entity)?.state === "on";
+        wrap.classList.add("hood-mode");
+        wrap.classList.toggle("hood-light", lightOn);
+        wrap.classList.toggle("hood-intensive", intensive);
+
+        let frac = null;
+        if (intensive)
+            frac = 1;
+        else if (fan && fan.percent)
+            frac = Math.min(1, fan.level / 100);
+        else if (fan && fan.max)
+            frac = Math.min(1, fan.level / fan.max);
+
+        // Faster spin for higher speeds; intensive is faster still.
+        const dur = intensive
+            ? Math.max(0.22, 0.34 - 0.05 * (intLevel - 1))
+            : (frac ? 1.7 - 1.2 * frac : 1.2);
+        wrap.style.setProperty("--hd-fan-dur", `${dur.toFixed(2)}s`);
+        wrap.style.setProperty("--hd-air-dur", `${Math.max(0.6, dur * 1.5).toFixed(2)}s`);
+
+        const barCount = fan?.percent ? 5 : Math.min(5, Math.max(1, fan?.max || 3));
+        const barsOn = !active ? 0 : (intensive ? barCount : Math.round((frac || 0) * barCount));
+        this.shadowRoot.querySelectorAll(".hd-lvl").forEach((bar, i) => {
+            bar.style.display = i < barCount ? "" : "none";
+            bar.classList.toggle("on", i < barsOn);
+        });
+
+        const arc = this._el("ringArc");
+        const hasSpeed = active && (intensive || (fan && fan.level > 0));
+        if (hasSpeed) {
+            if (intensive) {
+                this._el("ringTime").textContent =
+                    intens.max && intens.max > 1 ? `${intLevel}/${intens.max}` : String(intLevel);
+                this._el("ringLabel").textContent = t.ring_intensive;
+            } else {
+                this._el("ringTime").textContent = fan.percent ? `${fan.level}%`
+                    : (fan.max ? `${fan.level}/${fan.max}` : String(fan.level));
+                this._el("ringLabel").textContent = t.ring_fan;
+            }
+            const circ = 2 * Math.PI * 39;
+            arc.setAttribute("stroke-dasharray", frac !== null
+                ? `${(Math.max(0.04, frac) * circ).toFixed(1)} ${circ.toFixed(1)}` : "160 85");
+        } else {
+            arc.setAttribute("stroke-dasharray", "160 85");
+        }
+    }
+
     _update() {
         const c = this._config;
         const t = this._t;
@@ -1605,7 +1892,8 @@ class WashingMachineCard extends HTMLElement {
         wrap.classList.toggle("idle", !active);
         const start = active ? this._startDate() : null;
         const clock = start ? this._fmtClock(start) : null;
-        const remainingMinutes = active ? this._remainingMinutes() : null;
+        const isHood = this._applianceType === "hood";
+        const remainingMinutes = active && !isHood ? this._remainingMinutes() : null;
         const remainingClock = this._fmtRemaining(remainingMinutes);
         const liveClock = remainingClock ?? clock;
         this._el("dispTime").textContent = active ? (liveClock || "0:00") : "--:--";
@@ -1614,6 +1902,8 @@ class WashingMachineCard extends HTMLElement {
         const ringState = ["running", "idle", "paused", "standby"].includes(displayState) ? displayState : "off";
         this._el("ringLabel").textContent = remainingClock !== null ? t.ring_remaining : t[`ring_${ringState}`];
         this._el("ringArc").style.display = active ? "" : "none";
+        if (isHood)
+            this._updateHood(active);
         if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
             const rawState = status ? String(status.state) : "";
             const capitalizedRaw = WashingMachineCard.capitalize(rawState, t.locale);
@@ -1685,8 +1975,8 @@ class WashingMachineCard extends HTMLElement {
                 v !== null ? `${v} <span class="lc-unit">${c.currency}</span>` : "—";
             anyLc = true;
         }
-        if (anyLc)
-            this._el("lastCycle").classList.remove("hidden");
+        // A hood has no cycles, so the last-cycle panel is not shown for it.
+        this._el("lastCycle").classList.toggle("hidden", !anyLc || this._applianceType === "hood");
 
         if (c.notify_entity) {
             const on = this._st(c.notify_entity)?.state === "on";
@@ -1884,10 +2174,46 @@ class WashingMachineCardEditor extends HTMLElement {
                                     }, {
                                         value: "microwave",
                                         label: "Microwave"
+                                    }, {
+                                        value: "hood",
+                                        label: "Cooker hood (beta)"
                                     },
                                 ],
                             },
                         },
+                    }, {
+                        key: "fan_entity",
+                        kind: "entity",
+                        title: "Fan speed entity",
+                        description: "Hood only. A select with stages (e.g. Home Connect venting level), a fan entity, or a number. Shown in the ring and sets how fast the fan spins.",
+                        selector: {
+                            entity: {
+                                domain: ["select", "input_select", "fan", "number", "input_number", "sensor"]
+                            }
+                        },
+                        visibleIf: (config) => WashingMachineCard.normalizeType(config?.appliance_type) === "hood",
+                    }, {
+                        key: "intensive_entity",
+                        kind: "entity",
+                        title: "Intensive mode entity",
+                        description: "Hood only, optional. When it reports a stage above off, the card shows intensive mode.",
+                        selector: {
+                            entity: {
+                                domain: ["select", "input_select", "number", "input_number", "sensor", "switch", "binary_sensor"]
+                            }
+                        },
+                        visibleIf: (config) => WashingMachineCard.normalizeType(config?.appliance_type) === "hood",
+                    }, {
+                        key: "light_entity",
+                        kind: "entity",
+                        title: "Light entity",
+                        description: "Hood only, optional. Lights up the illustration when on.",
+                        selector: {
+                            entity: {
+                                domain: ["light", "switch", "input_boolean"]
+                            }
+                        },
+                        visibleIf: (config) => WashingMachineCard.normalizeType(config?.appliance_type) === "hood",
                     }, {
                         key: "status_entity",
                         kind: "entity",
@@ -2595,7 +2921,7 @@ window.customCards.push({
 Example configuration:
 
 type: custom:washing-machine-card
-appliance_type: washer                      # washer | dryer | dishwasher | oven | microwave
+appliance_type: washer                      # washer | dryer | dishwasher | oven | microwave | hood (beta)
 name: Washing machine
 status_entity: binary_sensor.washing_in_progress
 plug_entity: switch.washing_machine_plug

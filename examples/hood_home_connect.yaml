@@ -1,0 +1,19 @@
+# Animated Appliance Card — cooker hood (beta) with Home Connect
+#
+# Bosch / Siemens / Neff hoods create these entities through the Home Connect
+# integration. Replace "hood" with your own entity prefix
+# (Developer tools → States, filter by your appliance name).
+#
+# fan_entity also accepts other integrations:
+#   - a select with named options (off / low / medium / high), counted by position;
+#   - a fan entity (percentage and percentage_step);
+#   - a number / input_number with a "max".
+
+type: custom:washing-machine-card
+appliance_type: hood
+status_entity: sensor.hood_operation_state      # run / inactive
+fan_entity: select.hood_venting_level           # FanOff, FanStage01 … FanStage05
+intensive_entity: select.hood_intensive_level   # optional: IntensiveStageOff / 1 / 2
+light_entity: light.hood_functional_light       # optional: lights up the illustration
+plug_entity: switch.hood_power                  # optional: power button in the header
+confirm_plug_off: true

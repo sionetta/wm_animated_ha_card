@@ -97,7 +97,7 @@ Die Karte zeigt nur an, und `status_entity` ist Pflicht — dieser Schritt läss
 
 ```yaml
 type: custom:washing-machine-card
-appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave
+appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave | hood
 name: Waschmaschine
 status_entity: binary_sensor.washing_in_progress   # PFLICHT
 plug_entity: switch.washing_machine_plug           # Steckdosen-Button, Tippen schaltet um
@@ -126,7 +126,10 @@ theme: auto                                        # auto / light / dark / ha
 | Option | Pflicht | Standard | Beschreibung |
 |---|---|---|---|
 | `status_entity` | **ja** | – | Entity, deren Zustand einen laufenden Durchgang kennzeichnet. Ein Template-`binary_sensor` auf Leistung oder Strom der Steckdose eignet sich am besten. Textzustände (`washing`, `schleudern`, …) werden über `running_states` erkannt. |
-| `appliance_type` | nein | `washer` | Optik + Texte: `washer`, `dryer` (Alias `tumbler`), `dishwasher`, `oven` oder `microwave`. |
+| `appliance_type` | nein | `washer` | Optik + Texte: `washer`, `dryer` (Alias `tumbler`), `dishwasher`, `oven` oder `microwave` (beta: `hood`). |
+| `fan_entity` | nein | – | Nur Dunstabzugshaube. Lüfterstufe: ein Select mit nummerierten Stufen (Home Connect `FanStage02` → 2), ein Select mit benannten Optionen wie off / low / medium / high (nach Position gezählt), eine `fan`-Entität (Prozent und Stufen) oder eine Zahl. Steht im Ring und bestimmt, wie schnell sich der Lüfter dreht. |
+| `intensive_entity` | nein | – | Nur Dunstabzugshaube. Intensivstufe: ein Select mit Stufen (Home Connect `IntensiveStage1`), eine Zahl oder ein Schalter. |
+| `light_entity` | nein | – | Nur Dunstabzugshaube. Solange dieses Licht (oder dieser Schalter) an ist, leuchtet die Illustration. |
 | `name` | nein | übersetzt | Titel der Karte (Default hängt von `appliance_type` ab). |
 | `plug_entity` | nein | – | Schalter der Steckdose. Erscheint als Button in der Kopfzeile, Tippen schaltet um. |
 | `notify_entity` | nein | – | Automatisierung, `switch` oder `input_boolean` für die Benachrichtigung „Durchgang beendet“. Tippen schaltet um. |
@@ -158,6 +161,7 @@ theme: auto                                        # auto / light / dark / ha
 | `dishwasher` | Geschirrspüler | Spült |
 | `oven` | Backofen | Backt |
 | `microwave` | Mikrowelle | Erwärmt |
+| `hood` *(Beta)* | Dunstabzugshaube | Saugt ab |
 
 Titel und Texte sind in alle sieben Sprachen übersetzt; `name` überschreibt den Titel.
 
@@ -194,6 +198,27 @@ eingeschaltetes Gerät schon als laufend.
 In [`examples/smart_appliance.yaml`](examples/smart_appliance.yaml) steht die
 ausführliche Variante: dazu Fortschritt, Endzeit und Türzustand, für die die Karte
 keine eigenen Optionen hat, samt Hinweisen, was leer bleibt und warum.
+
+## 🌀 Dunstabzugshaube (Beta)
+
+`appliance_type: hood` zeigt eine Dunstabzugshaube statt eines Geräts mit Durchgängen. Eine Haube von Bosch / Siemens / Neff über [Home Connect](https://www.home-assistant.io/integrations/home_connect/):
+
+```yaml
+type: custom:washing-machine-card
+appliance_type: hood
+status_entity: sensor.hood_operation_state         # run / inactive
+fan_entity: select.hood_venting_level              # FanOff, FanStage01, FanStage02 …
+intensive_entity: select.hood_intensive_level      # optional
+light_entity: light.hood_functional_light          # optional
+plug_entity: switch.hood_power                     # optional: Ein/Aus-Taste
+```
+
+- Der Ring zeigt die **Lüfterstufe** (`2/3`) oder die Intensivstufe, der Bogen füllt sich entsprechend. Die Anzeige der Haube zeigt, wie lange sie schon läuft.
+- Mit jeder Stufe dreht sich der Lüfter schneller, in der Intensivstufe noch schneller; das Licht beleuchtet die Illustration auch bei ausgeschaltetem Lüfter.
+- Nicht an Home Connect gebunden: Jedes Select, jede `fan`-Entität oder Zahl funktioniert als `fan_entity` (siehe Tabelle oben).
+- Es gibt kein Feld *Letzter Durchgang* – eine Haube hat keine Durchgänge.
+
+Das ist eine Beta: Rückmeldungen gern in [#31](https://github.com/sionetta/wm_animated_ha_card/issues/31).
 
 ## 📝 Änderungsverlauf
 

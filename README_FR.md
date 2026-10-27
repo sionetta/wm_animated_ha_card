@@ -97,7 +97,7 @@ La carte ne fait qu'afficher, et `status_entity` est obligatoire : cette étape 
 
 ```yaml
 type: custom:washing-machine-card
-appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave
+appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave | hood
 name: Lave-linge
 status_entity: binary_sensor.washing_in_progress   # OBLIGATOIRE
 plug_entity: switch.washing_machine_plug           # bouton prise, appui = commuter
@@ -126,7 +126,10 @@ theme: auto                                        # auto / light / dark / ha
 | Option | Obligatoire | Défaut | Description |
 |---|---|---|---|
 | `status_entity` | **oui** | — | Entité dont l'état signale un cycle en cours. Un `binary_sensor` template sur la puissance ou le courant de la prise convient parfaitement ; les états textuels (`lavage`, `essorage`, …) sont reconnus via `running_states`. |
-| `appliance_type` | non | `washer` | Visuel + libellés : `washer`, `dryer` (alias `tumbler`), `dishwasher`, `oven` ou `microwave`. |
+| `appliance_type` | non | `washer` | Visuel + libellés : `washer`, `dryer` (alias `tumbler`), `dishwasher`, `oven` ou `microwave` (beta: `hood`). |
+| `fan_entity` | non | — | Hotte uniquement. Vitesse du ventilateur : un select à paliers numérotés (Home Connect `FanStage02` → 2), un select à options nommées comme off / low / medium / high (comptées par position), une entité `fan` (pourcentage et paliers) ou un nombre. Affichée dans l'anneau, elle règle la vitesse de rotation du ventilateur. |
+| `intensive_entity` | non | — | Hotte uniquement. Mode intensif : un select à paliers (Home Connect `IntensiveStage1`), un nombre ou un interrupteur. |
+| `light_entity` | non | — | Hotte uniquement. L'illustration s'éclaire tant que cette lumière (ou cet interrupteur) est allumée. |
 | `name` | non | localisé | Titre de la carte (le défaut dépend de `appliance_type`). |
 | `plug_entity` | non | — | Interrupteur de la prise connectée ; affiché comme bouton dans l'en-tête, l'appui le commute. |
 | `notify_entity` | non | — | Automatisation / switch / input_boolean de la notification « cycle terminé » ; l'appui la commute. |
@@ -158,6 +161,7 @@ theme: auto                                        # auto / light / dark / ha
 | `dishwasher` | Lave-vaisselle | Lavage en cours |
 | `oven` | Four | Cuisson en cours |
 | `microwave` | Micro-ondes | Réchauffage en cours |
+| `hood` *(bêta)* | Hotte | Aspiration |
 
 Les titres et libellés sont traduits dans les sept langues ; `name` remplace le titre.
 
@@ -194,6 +198,27 @@ pause ou allumé mais inactif sera compté comme en marche.
 [`examples/smart_appliance.yaml`](examples/smart_appliance.yaml) contient la version
 complète, avec la progression, l'heure de fin et l'état de la porte pour lesquels la
 carte n'a pas d'options dédiées, ainsi que des notes sur ce qui reste vide et pourquoi.
+
+## 🌀 Hotte (bêta)
+
+`appliance_type: hood` affiche une hotte aspirante au lieu d'un appareil à cycles. Une hotte Bosch / Siemens / Neff via [Home Connect](https://www.home-assistant.io/integrations/home_connect/) :
+
+```yaml
+type: custom:washing-machine-card
+appliance_type: hood
+status_entity: sensor.hood_operation_state         # run / inactive
+fan_entity: select.hood_venting_level              # FanOff, FanStage01, FanStage02 …
+intensive_entity: select.hood_intensive_level      # facultatif
+light_entity: light.hood_functional_light          # facultatif
+plug_entity: switch.hood_power                     # facultatif : bouton marche/arrêt
+```
+
+- L'anneau affiche la **vitesse du ventilateur** (`2/3`) ou le palier intensif, et son arc se remplit en conséquence. L'afficheur de la hotte indique depuis combien de temps elle fonctionne.
+- Le ventilateur tourne plus vite à chaque vitesse, et plus vite encore en mode intensif ; la lumière éclaire l'illustration même ventilateur arrêté.
+- Pas limité à Home Connect : tout select, entité `fan` ou nombre fonctionne comme `fan_entity` (voir le tableau ci-dessus).
+- Pas de panneau *Dernier cycle* : une hotte n'a pas de cycles.
+
+C'est une bêta : vos retours sont bienvenus dans [#31](https://github.com/sionetta/wm_animated_ha_card/issues/31).
 
 ## 📝 Journal des modifications
 

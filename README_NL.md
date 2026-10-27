@@ -97,7 +97,7 @@ De kaart toont alleen data, en `status_entity` is verplicht, dus deze stap kan n
 
 ```yaml
 type: custom:washing-machine-card
-appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave
+appliance_type: washer                             # washer | dryer | dishwasher | oven | microwave | hood
 name: Wasmachine
 status_entity: binary_sensor.washing_in_progress   # VERPLICHT
 plug_entity: switch.washing_machine_plug           # stekkerknop, tikken = schakelen
@@ -126,7 +126,10 @@ theme: auto                                        # auto / light / dark / ha
 | Optie | Verplicht | Standaard | Beschrijving |
 |---|---|---|---|
 | `status_entity` | **ja** | — | Entiteit waarvan de status een lopende cyclus aangeeft. Een sjabloon-`binary_sensor` op het vermogen/de stroom van de stekker werkt uitstekend; tekstuele statussen (`washing`, `spin`, …) worden herkend via `running_states`. |
-| `appliance_type` | nee | `washer` | Weergave + labels: `washer`, `dryer` (alias `tumbler`), `dishwasher`, `oven` of `microwave`. |
+| `appliance_type` | nee | `washer` | Weergave + labels: `washer`, `dryer` (alias `tumbler`), `dishwasher`, `oven` of `microwave` (beta: `hood`). |
+| `fan_entity` | nee | — | Alleen afzuigkap. Ventilatorstand: een select met genummerde standen (Home Connect `FanStage02` → 2), een select met benoemde opties zoals off / low / medium / high (geteld op positie), een `fan`-entiteit (percentage en standen) of een getal. Staat in de ring en bepaalt hoe snel de ventilator draait. |
+| `intensive_entity` | nee | — | Alleen afzuigkap. Intensieve stand: een select met standen (Home Connect `IntensiveStage1`), een getal of een schakelaar. |
+| `light_entity` | nee | — | Alleen afzuigkap. Zolang dit licht (of deze schakelaar) aan is, licht de illustratie op. |
 | `name` | nee | gelokaliseerd | Titel van de kaart (standaardwaarden hangen af van `appliance_type`). |
 | `plug_entity` | nee | — | Smart-plug-schakelaar; getoond als knop in de header, tikken schakelt hem. |
 | `notify_entity` | nee | — | Automatisering/schakelaar/input_boolean voor de melding "cyclus voltooid"; tikken schakelt hem. |
@@ -158,6 +161,7 @@ theme: auto                                        # auto / light / dark / ha
 | `dishwasher` | Vaatwasser | Wast af |
 | `oven` | Oven | Bakt |
 | `microwave` | Magnetron | Verwarmt |
+| `hood` *(bèta)* | Afzuigkap | Zuigt af |
 
 Titels en labels zijn vertaald naar alle zeven talen; `name` overschrijft de titel.
 
@@ -192,6 +196,27 @@ echt "loopt" betekent, anders wordt een gepauzeerd of ingeschakeld-maar-inactief
 [`examples/smart_appliance.yaml`](examples/smart_appliance.yaml) bevat de volledige versie,
 inclusief de voortgangs-, eindtijd- en deurwaarden waarvoor de kaart geen opties heeft, plus
 notities over wat leeg blijft en waarom.
+
+## 🌀 Afzuigkap (bèta)
+
+`appliance_type: hood` toont een afzuigkap in plaats van een apparaat met cycli. Een kap van Bosch / Siemens / Neff via [Home Connect](https://www.home-assistant.io/integrations/home_connect/):
+
+```yaml
+type: custom:washing-machine-card
+appliance_type: hood
+status_entity: sensor.hood_operation_state         # run / inactive
+fan_entity: select.hood_venting_level              # FanOff, FanStage01, FanStage02 …
+intensive_entity: select.hood_intensive_level      # optioneel
+light_entity: light.hood_functional_light          # optioneel
+plug_entity: switch.hood_power                     # optioneel: aan/uit-knop
+```
+
+- De ring toont de **ventilatorstand** (`2/3`) of de intensieve stand, en de boog vult zich mee. Het display van de kap toont hoelang hij al draait.
+- Bij elke stand draait de ventilator sneller, in de intensieve stand nog sneller; het licht verlicht de illustratie, ook met de ventilator uit.
+- Niet gebonden aan Home Connect: elke select, `fan`-entiteit of getal werkt als `fan_entity` (zie de tabel hierboven).
+- Er is geen paneel *Laatste cyclus* — een afzuigkap heeft geen cycli.
+
+Dit is een bèta: feedback is welkom in [#31](https://github.com/sionetta/wm_animated_ha_card/issues/31).
 
 ## 📝 Changelog
 
