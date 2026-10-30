@@ -1073,7 +1073,7 @@ class WashingMachineCard extends HTMLElement {
       </svg>`;
     }
 
-    _svgDryingRack(u) {
+_svgDryingRack(u) {
         return `
       <svg class="machine" id="machine" viewBox="0 0 220 232" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -1082,10 +1082,6 @@ class WashingMachineCard extends HTMLElement {
             <stop offset=".55" stop-color="#f2f5f9"/>
             <stop offset="1" stop-color="#d9e0e9"/>
           </linearGradient>
-          <radialGradient id="${u}-heat" cx=".5" cy=".5" r=".7">
-            <stop offset="0" stop-color="#ffb347" stop-opacity=".6"/>
-            <stop offset="1" stop-color="#ffb347" stop-opacity="0"/>
-          </radialGradient>
         </defs>
         <ellipse cx="110" cy="222" rx="76" ry="8" fill="#20304a" opacity=".16"/>
         <rect x="30" y="8" width="160" height="204" rx="18" fill="url(#${u}-body)"/>
@@ -1093,25 +1089,28 @@ class WashingMachineCard extends HTMLElement {
         <rect x="48" y="210" width="10" height="7" rx="3" fill="#9aa6b4"/>
         <rect x="162" y="210" width="10" height="7" rx="3" fill="#9aa6b4"/>
         
+        <!-- Display Bovenin -->
         <rect x="75" y="18" width="70" height="18" rx="9" fill="#0d1526"/>
         <text id="dispTime" x="103" y="31" text-anchor="middle"
               font-family="ui-monospace, 'SF Mono', Consolas, monospace"
               font-size="11.5" font-weight="700" fill="#e8f1ff" letter-spacing="1">--:--</text>
         <circle id="dispDot" cx="136" cy="27" r="2.4" fill="#22b263"/>
 
+        <!-- Droogrek Frame -->
         <g transform="translate(0, 10)">
-          <circle class="heat" cx="110" cy="115" r="50" fill="url(#${u}-heat)" opacity=".4"/>
+          <!-- Poten en bovenbalk -->
           <path d="M40 85 L110 60 L180 85" fill="none" stroke="#9aa6b4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M65 77 L85 160" fill="none" stroke="#7d8894" stroke-width="3.5" stroke-linecap="round"/>
           <path d="M155 77 L135 160" fill="none" stroke="#7d8894" stroke-width="3.5" stroke-linecap="round"/>
-          <path d="M50 120 L170 120" fill="none" stroke="#f0a04b" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M55 130 L165 130" fill="none" stroke="#f0a04b" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M60 100 L160 100" fill="none" stroke="#f0a04b" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M65 110 L155 110" fill="none" stroke="#f0a04b" stroke-width="2.5" stroke-linecap="round"/>
           <circle cx="110" cy="60" r="5" fill="#31415a"/>
-        </g>
-        <g class="arcs">
-          <circle cx="110" cy="125" r="62" fill="none" stroke="#f0a04b" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 50" opacity=".9"/>
+
+          <!-- Horizontale Droogdraden (veranderen van kleur bij Aan / Uit) -->
+          <g class="rack-lines">
+            <path d="M60 100 L160 100" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M63 110 L157 110" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M52 120 L168 120" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M55 130 L165 130" stroke-width="2.8" stroke-linecap="round"/>
+          </g>
         </g>
       </svg>`;
     }
@@ -1894,7 +1893,7 @@ class WashingMachineCardEditor extends HTMLElement {
                                         label: "Microwave"
                                     }, {
                                         value: "drying_rack",
-                                        label: "Drying rack"
+                                        label: ""
                                     },
                                 ],
                             },
