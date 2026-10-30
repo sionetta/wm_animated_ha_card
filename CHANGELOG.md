@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [1.5.0] — 2026-10-27
+## [1.5.3] — 2026-10-30 (Me TGM) added drying rack 
 
 ### Added
 - **`remaining_entity`** — optional generic remaining-time input for the ring and
