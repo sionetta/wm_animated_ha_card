@@ -1481,6 +1481,21 @@ _svgDryingRack(u) {
         .lc-value { font-size: 14.5px; font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
         .lc-unit { font-size: 11px; font-weight: 700; color: var(--wm-accent); }
         .hidden { display: none !important; }
+        .rack-lines path {
+          stroke: #b0bac6;
+          transition: stroke 0.4s ease;
+        }
+
+        /* Aan (Running): Geel/Oranje met een subtiele pulse */
+        .running .rack-lines path {
+          stroke: #f0a04b;
+          animation: rackPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes rackPulse {
+          0% { stroke: #f0a04b; filter: drop-shadow(0 0 1px rgba(240, 160, 75, 0.4)); }
+          100% { stroke: #ffb75e; filter: drop-shadow(0 0 4px rgba(240, 160, 75, 0.8)); }
+        }
       </style>
 
       <ha-card>
