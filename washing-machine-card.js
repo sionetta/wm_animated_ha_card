@@ -7,7 +7,7 @@
  *
  * https://github.com/sionetta/wm_animated_ha_card
  * License: MIT
- * Version: 1.5.1
+ * Version: 1.5.3
  */
 
 class WashingMachineCard extends HTMLElement {
@@ -1481,14 +1481,15 @@ _svgDryingRack(u) {
         .lc-value { font-size: 14.5px; font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
         .lc-unit { font-size: 11px; font-weight: 700; color: var(--wm-accent); }
         .hidden { display: none !important; }
+/* Standaard (Uit / Idle): Grijs */
         .rack-lines path {
-          stroke: #b0bac6;
-          transition: stroke 0.4s ease;
+          stroke: #b0bac6 !important;
+          transition: stroke 0.3s ease;
         }
 
-        /* Aan (Running): Geel/Oranje met een subtiele pulse */
-        .running .rack-lines path {
-          stroke: #f0a04b;
+        /* Als de kaart in de 'running' (aan) status staat: Geel / Oranje */
+        #wrap.running .rack-lines path {
+          stroke: #f0a04b !important;
           animation: rackPulse 2s ease-in-out infinite alternate;
         }
 
