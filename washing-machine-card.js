@@ -1492,11 +1492,19 @@ _svgDryingRack(u) {
           transition: stroke 0.3s ease;
         }
 
-        /* Als de kaart in de 'running' (aan) status staat: Geel / Oranje */
-        #wrap.running .rack-lines path {
+        /* Standaard (Uit / Idle): Mooi lichtgrijs in Dark mode */
+        :host(.wm-dark) .rack-lines path {
+          stroke: #7d8894 !important;
+        }
+
+        /* Als het droogrek AAN staat (Running): Geel/Oranje in zowel Light als Dark mode */
+        .running .rack-lines path,
+        #wrap.running .rack-lines path,
+        :host(.wm-dark) .running .rack-lines path {
           stroke: #f0a04b !important;
           animation: rackPulse 2s ease-in-out infinite alternate;
         }
+
 
         @keyframes rackPulse {
           0% { stroke: #f0a04b; filter: drop-shadow(0 0 1px rgba(240, 160, 75, 0.4)); }
