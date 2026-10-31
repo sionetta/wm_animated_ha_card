@@ -1244,13 +1244,6 @@ _svgDryingRack(u) {
           font-family: var(--paper-font-body1_-_font-family, inherit);
           box-shadow: var(--ha-card-box-shadow, var(--wm-card-shadow));
         }
-        :host(.wm-dark) ha-card {
-          background: linear-gradient(180deg, 
-          #1d2634 0%, 
-          #18212f 55%, 
-          #141c29 100%) !important;
-          color: #e8eef7 !important;
-          border: 1px solid rgba(255, 255, 255, 0.08);
           
         ha-card::before {
           content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
