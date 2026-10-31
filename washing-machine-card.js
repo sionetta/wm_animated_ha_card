@@ -1183,6 +1183,11 @@ _svgDryingRack(u) {
           --wm-divider: rgba(255,255,255,.09);
           --wm-appliance-dim: .93;
         }
+        /* Voeg deze regel toe voor het droogrek in dark mode: */
+        :host(.wm-dark) .rack-lines path {
+          stroke: #7d8894 !important;
+        }
+    
         :host(.wm-native) {
           --wm-grad: var(--ha-card-background, var(--card-background-color, #fff));
           --wm-text: var(--primary-text-color, #1c2733);
