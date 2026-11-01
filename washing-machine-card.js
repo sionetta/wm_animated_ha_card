@@ -32,7 +32,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Dishwasher", state_running: "Washing dishes" },
                 oven: { name: "Oven", state_running: "Baking" },
                 microwave: { name: "Microwave", state_running: "Heating" },
-                drying_rack: { name: "Drying rack", state_running: "Drying" },
+                drying_rack: { name: "Drying rack", state_running: "Heating" },
             },
             running_states: [
                 "washing", "running", "run", "wash", "spin", "rinse", "drying", "dry", "tumble",
@@ -81,7 +81,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Geschirrspüler", state_running: "Spült" },
                 oven: { name: "Backofen", state_running: "Backt" },
                 microwave: { name: "Mikrowelle", state_running: "Erwärmt" },
-                drying_rack: { name: "Wäscheständer", state_running: "Trocknet" },
+                drying_rack: { name: "Wäscheständer", state_running: "Erwärmt" },
             },
             running_states: [
                 "waschen", "läuft", "schleudern", "spülen", "trocknen",
@@ -130,7 +130,7 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Vaatwasser", state_running: "Wast af" },
                 oven: { name: "Oven", state_running: "Bakt" },
                 microwave: { name: "Magnetron", state_running: "Verwarmt" },
-                drying_rack: { name: "Droogrek", state_running: "Droogt" },
+                drying_rack: { name: "Droogrek", state_running: "Verwarmt" },
             },
             running_states: [
                 "wassen", "bezig", "centrifugeren", "spoelen", "drogen",
