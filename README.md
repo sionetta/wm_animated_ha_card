@@ -3,7 +3,7 @@
 **English** | [Русский](README_RU.md) | [Deutsch](README_DE.md) | [Français](README_FR.md) | [Nederlands](README_NL.md)
 
 An Oikos-inspired Lovelace card that turns a *dumb* washer, dryer, dishwasher, oven or microwave on a smart plug into a beautiful, animated dashboard widget — no smart appliance required.
-![Demo](media/2026-10-30 235928.gif)
+
 ![Demo](media/demo_en.gif)
 
 
