@@ -1733,7 +1733,19 @@ _svgAirco(u) {
         const ringState = ["running", "idle", "paused", "standby"].includes(displayState) ? displayState : "off";
         this._el("ringLabel").textContent = remainingClock !== null ? t.ring_remaining : t[`ring_${ringState}`];
         this._el("ringArc").style.display = active ? "" : "none";
-        if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
+        if (this._applianceType === "airco" && c.climate_entity && this._hass.states[c.climate_entity]) {
+            const climState = this._hass.states[c.climate_entity].state;
+            // Vertaal de climate statussen naar nette leesbare teksten
+            const climMap = {
+                cool: "Koelt",
+                heat: "Verwarmt",
+                dry: "Ontvochtigt",
+                fan_only: "Ventileert",
+                auto: "Automatisch",
+                off: "Uit"
+            };
+            this._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
+        } else if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
             const rawState = status ? String(status.state) : "";
             const capitalizedRaw = WashingMachineCard.capitalize(rawState, t.locale);
             this._el("stState").textContent = noData ? t.state_nodata : capitalizedRaw;
