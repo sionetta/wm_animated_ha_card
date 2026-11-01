@@ -2473,7 +2473,19 @@ class WashingMachineCardEditor extends HTMLElement {
       </style>
       <div class="wm-editor" id="editor"></div>
     `;
-
+        const mainCard = root.querySelector(".card") || root.firstElementChild;
+        if (mainCard && c.climate_entity) {
+            mainCard.style.cursor = "pointer";
+            mainCard.onclick = () => {
+                const event = new Event("hass-more-info", {
+                    bubbles: true,
+                    composed: true
+                });
+                event.detail = { entityId: c.climate_entity };
+                this.dispatchEvent(event);
+            };
+        }
+    }
         const editor = root.getElementById("editor");
         const sections = WashingMachineCardEditor._sections;
 
