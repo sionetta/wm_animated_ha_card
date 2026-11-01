@@ -7,7 +7,7 @@
  *
  * https://github.com/sionetta/wm_animated_ha_card
  * License: MIT
- * Version: 1.5.3
+ * Version: 1.5.4
  */
 
 class WashingMachineCard extends HTMLElement {
