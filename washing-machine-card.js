@@ -11,7 +11,7 @@
  */
 
 class WashingMachineCard extends HTMLElement {
-    static APPLIANCE_TYPES = ["washer", "dryer", "dishwasher", "oven", "microwave", "drying_rack"];
+    static APPLIANCE_TYPES = ["washer", "dryer", "dishwasher", "oven", "microwave", "drying_rack", "airco"];
 
     static STRINGS = {
         en: {
