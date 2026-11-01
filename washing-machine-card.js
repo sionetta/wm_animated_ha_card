@@ -295,12 +295,13 @@ class WashingMachineCard extends HTMLElement {
         }
     }  
 
-set hass(hass) {
-    this._hass = hass;
-    if (!this._built)
-        this._build();
-    this._update();
-}
+    set hass(hass) { // <--- Hier 4 spaties inspringen zodat het in de klasse valt!
+        this._hass = hass;
+        if (!this._built)
+            this._build();
+        this._update();
+    }
+
     getCardSize() {
         return 6;
     }
