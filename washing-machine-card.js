@@ -1213,7 +1213,9 @@ _svgAirco(u) {
                 this.dispatchEvent(event);
             };
         }
-        root.innerHTML = `
+        const editor = root.getElementById("editor");
+        const sections = WashingMachineCardEditor._sections;
+    
       <style>
         :host {
           display: block;
