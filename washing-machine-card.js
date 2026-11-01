@@ -288,6 +288,11 @@ class WashingMachineCard extends HTMLElement {
         };
         this._uid = `a${Math.random().toString(36).slice(2, 9)}`;
         this._built = false;
+
+        if (this._hass) {
+            this._update()
+            this._build();
+    
     }
 
     set hass(hass) {
@@ -1794,7 +1799,7 @@ _svgAirco(u) {
             const s = this._st(c.duration_entity);
             const d = this._fmtDuration(s?.state);
             this._el("lcDuration").classList.remove("hidden");
-            this._el("lcDurationV").inner = d
+            this._el("lcDurationV").innerHTML = d
                  ? (d.unit ? `${d.value} <span class="lc-unit">${d.unit}</span>` : d.value)
                  : "—";
             anyLc = true;
