@@ -290,11 +290,10 @@ class WashingMachineCard extends HTMLElement {
         this._built = false;
 
         if (this._hass) {
-            this._update();
             this._build();
+            this._update();
         }
-    } 
-}    
+    }  
 
 set hass(hass) {
     this._hass = hass;
