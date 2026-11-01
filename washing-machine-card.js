@@ -2646,7 +2646,7 @@ class WashingMachineCardEditor extends HTMLElement {
                 if (field.kind === "keywords") {
                     if (!this._focusedElements.has(el.input)) {
                         if (this._hasConfidentLanguageReading()) {
-                            const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
+                            const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass)
                             this._migrateKeywordsOnLanguageChange(field, this._lastKnownLang);
                             this._lastKnownLang = lang;
                         }
@@ -2779,7 +2779,7 @@ class WashingMachineCardEditor extends HTMLElement {
         const sameAsDefault = words.length === defaults.length &&
             defaults.every((word) => words.includes(word));
         const isDefault = words.length === 0 || sameAsDefault;
-        const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
+        const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass)
         const cache = WashingMachineCardEditor._keywordsLangCache;
         const cacheKey = WashingMachineCardEditor._keywordsCacheKey(this._config);
         if (isDefault)
