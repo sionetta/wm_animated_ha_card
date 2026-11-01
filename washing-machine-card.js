@@ -1167,7 +1167,7 @@ _svgAirco(u) {
           <path class="flow-line line-5" d="M 155 80 Q 160 100 165 115" />
         </g>
 
-        <!-- Airco Behuizing (gebruikt thema variabelen zodat hij zichtbaar is in dark mode) -->
+        <!-- Airco Behuizing -->
         <rect x="20" y="20" width="160" height="60" rx="8" fill="var(--wm-icon-bg, #ffffff)" stroke="var(--wm-divider, #cbd5e1)" stroke-width="2"/>
         <rect x="135" y="32" width="30" height="14" rx="3" fill="#1e293b" />
         <text id="dispTime" x="150" y="43" font-size="9" fill="#38bdf8" text-anchor="middle" font-family="sans-serif">20°</text>
