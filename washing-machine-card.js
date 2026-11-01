@@ -231,6 +231,8 @@ class WashingMachineCard extends HTMLElement {
             return "microwave";
         if (raw === "drying_rack" || raw === "drying-rack" || raw === "droogrek")
             return "drying_rack";
+        if (raw === "airco" || raw === "air-conditioning" || raw === "air_conditioning")
+            return "airco";
         if (WashingMachineCard.APPLIANCE_TYPES.includes(raw))
             return raw;
         return "washer";
