@@ -2646,7 +2646,7 @@ class WashingMachineCardEditor extends HTMLElement {
                 if (field.kind === "keywords") {
                     if (!this._focusedElements.has(el.input)) {
                         if (this._hasConfidentLanguageReading()) {
-                            const lang = ._resolveLanguage(this._config, this._hass);
+                            const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
                             this._migrateKeywordsOnLanguageChange(field, this._lastKnownLang);
                             this._lastKnownLang = lang;
                         }
