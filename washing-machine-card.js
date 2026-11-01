@@ -1741,7 +1741,6 @@ _svgDryingRack(u) {
         this._el("lcEnergyLabel").textContent = t.energy;
         this._el("lcCostLabel").textContent = t.cost;
         const climateEntity = this._hass.states[c.climate_entity];
-        const wrap = this._el("wrap");
 
         if (climateEntity) {
             const mode = climateEntity.state; // 'cool', 'heat', 'dry', 'fan_only', 'auto', 'off'
