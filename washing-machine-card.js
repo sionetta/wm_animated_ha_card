@@ -1198,8 +1198,9 @@ _svgAirco(u) {
             </div>
           </ha-card>
         `;
+        this._el = (id) => root.getElementById(id);
 
-        // 2.  .wrap en de klik-actie koppelen
+        // Event listeners koppelen
         const mainCard = root.querySelector(".wrap") || root.firstElementChild;
         if (mainCard && c.climate_entity) {
             mainCard.style.cursor = "pointer";
@@ -1212,7 +1213,6 @@ _svgAirco(u) {
                 this.dispatchEvent(event);
             };
         }
-        });
         root.innerHTML = `
       <style>
         :host {
