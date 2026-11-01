@@ -1650,10 +1650,10 @@ _svgAirco(u) {
       </ha-card>
     `;
 
-
+        this._el = (id) => root.getElementById(id);
 
         // Event listeners koppelen
-        const mainCard = root.querySelector(".wrap") || root.firstElementChild;
+        const mainCard = root.querySelector(".card") || root.firstElementChild;
         if (mainCard && c.climate_entity) {
             mainCard.style.cursor = "pointer";
             mainCard.onclick = () => {
@@ -1665,8 +1665,6 @@ _svgAirco(u) {
                 this.dispatchEvent(event);
             };
         }
-        const sections = WashingMachineCardEditor._sections;  
-        this._el = (id) => root.getElementById(id);
 
         const mi = (ent) => () => this._moreInfo(ent);
         this._el("chartBtn").addEventListener("click", mi(c.power_entity || c.status_entity));
@@ -2303,6 +2301,7 @@ class WashingMachineCardEditor extends HTMLElement {
     }
 
     _build() {
+        const sections = WashingMachineCardEditor._sections;  
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
@@ -2488,19 +2487,7 @@ class WashingMachineCardEditor extends HTMLElement {
       </style>
       <div class="wm-editor" id="editor"></div>
     `;
-        const mainCard = root.querySelector(".card") || root.firstElementChild;
-        if (mainCard && c.climate_entity) {
-            mainCard.style.cursor = "pointer";
-            mainCard.onclick = () => {
-                const event = new Event("hass-more-info", {
-                    bubbles: true,
-                    composed: true
-                });
-                event.detail = { entityId: c.climate_entity };
-                this.dispatchEvent(event);
-            };
-        }
-    }
+        
         const editor = root.getElementById("editor");
         const sections = WashingMachineCardEditor._sections;
 
@@ -2659,7 +2646,7 @@ class WashingMachineCardEditor extends HTMLElement {
                 if (field.kind === "keywords") {
                     if (!this._focusedElements.has(el.input)) {
                         if (this._hasConfidentLanguageReading()) {
-                            const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
+                            const lang = ._resolveLanguage(this._config, this._hass);
                             this._migrateKeywordsOnLanguageChange(field, this._lastKnownLang);
                             this._lastKnownLang = lang;
                         }
