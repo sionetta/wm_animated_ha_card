@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [1.5.0] — 2026-10-27
 
+
 ### Added
 - **`remaining_entity`** — optional generic remaining-time input for the ring and
   appliance display. Accepts numeric minutes, common Home Assistant duration
@@ -250,3 +251,9 @@ First public release: an Oikos-style animated washing machine card for a dumb
 machine on a smart plug — animated drum, live status with an elapsed-time ring,
 power gauge, last-cycle stats (start / duration / energy / cost), English and
 Russian interface, HACS support, MIT license.
+
+## [1.0.3] - TGM 2026-10-31
+Added Dyying rack
+
+## [1.0.4] - TGM 2026-11-01
+Added Airco

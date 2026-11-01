@@ -2,31 +2,16 @@
  * Washing Machine Animated Card for Home Assistant
  * ================================================
  * An Oikos-style Lovelace card for a "dumb" appliance on a smart plug:
- * animated illustration (washer / dryer / dishwasher / oven / microwave), live status,
+ * animated illustration (washer / dryer / dishwasher / oven / microwave / drying_rack), live status,
  * power gauge and last-cycle stats.
  *
  * https://github.com/sionetta/wm_animated_ha_card
  * License: MIT
- * Version: 1.5.0
- *
- * UI languages: en, ru, de, fr, nl, pt, el (auto-detected from Home Assistant, or set `language:`).
- * Appliances: washer, dryer, dishwasher, oven, microwave (`appliance_type:`).
- * Theme: follows the Home Assistant theme automatically (`theme: auto | light | dark`),
- * or `theme: ha` to adopt the colours of your active Home Assistant theme.
- *
- * Install:
- *   1. Copy to /config/www/washing-machine-card.js
- *   2. Add a dashboard resource:
- *        url: /local/washing-machine-card.js?v=7
- *        type: module
- *   3. Add the card — full example at the bottom of this file.
- *
- * Every entity option except status_entity is optional — blocks without
- * an entity are simply hidden.
+ * Version: 1.5.4.1
  */
 
 class WashingMachineCard extends HTMLElement {
-    static APPLIANCE_TYPES = ["washer", "dryer", "dishwasher", "oven", "microwave"];
+    static APPLIANCE_TYPES = ["washer", "dryer", "dishwasher", "oven", "microwave", "drying_rack", "airco"];
 
     static STRINGS = {
         en: {
@@ -47,10 +32,12 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Dishwasher", state_running: "Washing dishes" },
                 oven: { name: "Oven", state_running: "Baking" },
                 microwave: { name: "Microwave", state_running: "Heating" },
+                drying_rack: { name: "Drying rack", state_running: "Heating" },
+                airco: { name: "Air conditioning", state_running: "Cooling / Heating" }
             },
             running_states: [
                 "washing", "running", "run", "wash", "spin", "rinse", "drying", "dry", "tumble",
-                "baking", "bake", "cooking", "cook", "heating", "heat", "microwave", "oven",
+                "baking", "bake", "cooking", "cook", "heating", "heat", "microwave", "oven", "on", "cool", "dehumidify", "fan",
             ],
         },
         ru: {
@@ -71,6 +58,9 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Посудомойка", state_running: "Моет посуду" },
                 oven: { name: "Духовка", state_running: "Выпечка" },
                 microwave: { name: "Микроволновка", state_running: "Разогрев" },
+                drying_rack: { name: "Сушилка для белья", state_running: "Сушка" },
+                airco: { name: "Кондиционирование", state_running: "Охлаждение / Нагрев" }
+                
             },
             running_states: [
                 "стирка", "отжим", "полоскание",
@@ -94,6 +84,8 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Geschirrspüler", state_running: "Spült" },
                 oven: { name: "Backofen", state_running: "Backt" },
                 microwave: { name: "Mikrowelle", state_running: "Erwärmt" },
+                drying_rack: { name: "Wäscheständer", state_running: "Erwärmt" },
+                airco: { name: "Klimaanlage", state_running: "Kühlen / Heizen" }
             },
             running_states: [
                 "waschen", "läuft", "schleudern", "spülen", "trocknen",
@@ -117,6 +109,8 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Lave-vaisselle", state_running: "Lavage en cours" },
                 oven: { name: "Four", state_running: "Cuisson en cours" },
                 microwave: { name: "Micro-ondes", state_running: "Réchauffage en cours" },
+                drying_rack: { name: "Étendoir", state_running: "Séchage en cours" },
+                airco: { name: "Climatisation", state_running: "Refroidissement / Chauffage" }
             },
             running_states: [
                 "lavage", "en cours", "essorage", "rincage", "rinçage",
@@ -141,10 +135,12 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Vaatwasser", state_running: "Wast af" },
                 oven: { name: "Oven", state_running: "Bakt" },
                 microwave: { name: "Magnetron", state_running: "Verwarmt" },
+                drying_rack: { name: "Droogrek", state_running: "Verwarmt" },
+                airco: { name: "Airco", state_running: "Koelt / Verwarmt" }
             },
             running_states: [
                 "wassen", "bezig", "centrifugeren", "spoelen", "drogen",
-                "bakken", "verwarmen",
+                "bakken", "verwarmen", "aan", "koelen", "ontvochtigen", "ventilator",
             ],
         },
         pt: {
@@ -165,12 +161,15 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Lava-louças", state_running: "Lavando louças" },
                 oven: { name: "Forno", state_running: "Assando" },
                 microwave: { name: "Micro-ondas", state_running: "Aquecendo" },
+                drying_rack: { name: "Estendal de roupa", state_running: "Secando" },
+                airco: { name: "Ar-condicionado", state_running: "Refrigeração / Aquecimento" }
             },
             running_states: [
                 "lavando", "lavagem", "lavagem longa", "lavagem normal", "lavagem curta", "em andamento", "rodando",
                 "centrifugação", "centrifugacao", "centrifugando", "enxágue", "enxague", "enxaguando", "enxaguar",
                 "secando", "secagem", "secar",
-                "assando", "assar", "cozinhando", "cozinhar", "aquecendo", "aquecer", "micro-ondas", "forno",
+                "assando", "assar", "cozinhando", "cozinhar", "aquecendo", "aquecer", "micro-ondas", "forno", "ligado", "aquecimento",
+                "resfriar", "aquecer", "desumidificar", "apenas_ventilação", "automático"
             ],
         },
         el: {
@@ -191,11 +190,13 @@ class WashingMachineCard extends HTMLElement {
                 dishwasher: { name: "Πλυντήριο πιάτων", state_running: "Πλύσιμο πιάτων" },
                 oven: { name: "Φούρνος", state_running: "Ψήσιμο" },
                 microwave: { name: "Φούρνος μικροκυμάτων", state_running: "Ζέσταμα" },
+                drying_rack: { name: "Απλώστρα ρούχων", state_running: "Στέγνωμα" },
+                airco: { name: "Κλιματισμός", state_running: "Ψύξη / Θέρμανση" }
             },
             running_states: [
                 "πλύση", "πλυση", "πλύσιμο", "πλυσιμο", "ξέβγαλμα", "ξεβγαλμα", "στύψιμο", "στυψιμο",
                 "στέγνωμα", "στεγνωμα", "σε λειτουργία", "σε λειτουργια",
-                "ψήσιμο", "ψησιμο", "μαγείρεμα", "μαγειρεμα", "ζέσταμα", "ζεσταμα",
+                "ψήσιμο", "ψησιμο", "μαγείρεμα", "μαγειρεμα", "ζέσταμα", "ζεσταμα", "ενεργοποίηση", "ψύξη", "αφύγρανση", "ανεμιστήρας", "вкл", "охлаждать", "осушать", "вентилятор",
             ],
         },
     };
@@ -228,6 +229,10 @@ class WashingMachineCard extends HTMLElement {
             return "oven";
         if (raw === "mikrowelle" || raw === "micro-wave" || raw === "micro_wave")
             return "microwave";
+        if (raw === "drying_rack" || raw === "drying-rack" || raw === "droogrek")
+            return "drying_rack";
+        if (raw === "airco" || raw === "air-conditioning" || raw === "air_conditioning")
+            return "airco";
         if (WashingMachineCard.APPLIANCE_TYPES.includes(raw))
             return raw;
         return "washer";
@@ -266,7 +271,7 @@ class WashingMachineCard extends HTMLElement {
             if (name)
                 return WashingMachineCard.capitalize(name);
         } catch (e) {
-            // Intl.DisplayNames unsupported, or code not recognized — fall through.
+            // Intl.DisplayNames unsupported, or code not recognized
         }
         return code.toUpperCase();
     }
@@ -283,9 +288,16 @@ class WashingMachineCard extends HTMLElement {
         };
         this._uid = `a${Math.random().toString(36).slice(2, 9)}`;
         this._built = false;
-    }
 
-    set hass(hass) {
+       if (this.shadowRoot) {
+            this._build();
+            if (this._hass) {
+                this._update();
+            }
+        }
+    } 
+
+    set hass(hass) { // <--- Hier 4 spaties inspringen zodat het in de klasse valt!
         this._hass = hass;
         if (!this._built)
             this._build();
@@ -377,10 +389,8 @@ class WashingMachineCard extends HTMLElement {
     _isRunning() {
         const c = this._config;
         const cycleIsActive = this._cycleIsActive();
-        // Without a power sensor, the status entity is the only source of truth.
         if (!c.power_entity)
             return cycleIsActive;
-        // With a power sensor, RUNNING requires an active cycle and power consumption above the configured threshold.
         const p = parseFloat(this._st(c.power_entity)?.state);
         return cycleIsActive && !isNaN(p) && p > c.power_threshold;
     }
@@ -393,8 +403,6 @@ class WashingMachineCard extends HTMLElement {
         const p = parseFloat(this._st(c.power_entity)?.state);
         if (cycleIsActive)
             return !isNaN(p) && p > c.power_threshold ? "running" : "paused";
-        // No active cycle, but the appliance still draws power: it was left on (standby).
-        // Opt-in via standby_threshold, so plugs that report a little noise when the appliance is off stay "off".
         const standby = parseFloat(c.standby_threshold);
         if (!isNaN(standby) && !isNaN(p) && p > standby)
             return "standby";
@@ -409,7 +417,7 @@ class WashingMachineCard extends HTMLElement {
     }
 
     _hour12() {
-      const tf = this._hass?.locale?.time_format; // "12" | "24" | "language" | "system"
+      const tf = this._hass?.locale?.time_format;
       if (tf === "12") return true;
       if (tf === "24") return false;
 
@@ -463,8 +471,6 @@ class WashingMachineCard extends HTMLElement {
         if (!raw || ["unknown", "unavailable", "none"].includes(raw.toLowerCase()))
             return null;
 
-        // Time-only input_datetime represents the next occurrence of a clock time.
-        // Check the entity metadata first to avoid interpreting 14:30:00 as 14 hours 30 minutes.
         if (c.remaining_entity.startsWith("input_datetime.") &&
             entity.attributes?.has_date === false && entity.attributes?.has_time === true) {
             const time = raw.match(/^([01]?\d|2[0-3]):([0-5]\d):([0-5]\d)$/);
@@ -478,12 +484,10 @@ class WashingMachineCard extends HTMLElement {
             return (end.getTime() - now.getTime()) / 60000;
         }
 
-        // Duration strings: H:MM:SS or H:MM.
         const hms = raw.match(/^(\d+):([0-5]\d)(?::([0-5]\d))?$/);
         if (hms)
             return Number(hms[1]) * 60 + Number(hms[2]) + Number(hms[3] || 0) / 60;
 
-        // Numeric durations: minutes by default, with standard HA unit conversion.
         const numeric = Number(raw.replace(",", "."));
         if (Number.isFinite(numeric)) {
             const unit = String(entity.attributes?.unit_of_measurement || "").trim().toLowerCase();
@@ -498,7 +502,6 @@ class WashingMachineCard extends HTMLElement {
             return Math.max(0, numeric);
         }
 
-        // A timestamp is interpreted as the expected end time.
         const end = this._parseDate(raw);
         if (end)
             return Math.max(0, (end.getTime() - Date.now()) / 60000);
@@ -524,7 +527,6 @@ class WashingMachineCard extends HTMLElement {
         const n = parseFloat(value);
         if (isNaN(n))
             return null;
-        // Trim trailing zeros (e.g. 2.50 -> 2.5, 2.00 -> 2), same as before.
         let trimmedDigits = '';
         if (digits > 0) {
             const stripped = n.toFixed(digits).replace(/0+$/, "").replace(/\.$/, "");
@@ -532,17 +534,14 @@ class WashingMachineCard extends HTMLElement {
             trimmedDigits = dotIndex === -1 ? 0 : stripped.length - dotIndex - 1;
         }
         const numberFormat = this._hass?.locale?.number_format;
-        // "None": raw number, no thousands separator, dot as decimal point.
         if (numberFormat === "none")
             return n.toFixed(trimmedDigits);
-        // "System": defer entirely to the browser/OS locale.
         if (numberFormat === "system") {
             return new Intl.NumberFormat(undefined, {
                 minimumFractionDigits: trimmedDigits,
                 maximumFractionDigits: trimmedDigits,
             }).format(n);
         }
-        // comma_decimal / decimal_comma / space_comma: build the string from the separators the option name itself describes.
         const separators = WashingMachineCard.NUMBER_SEPARATORS[numberFormat];
         if (separators) {
             const isNegative = n < 0;
@@ -550,7 +549,6 @@ class WashingMachineCard extends HTMLElement {
             const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, separators.group);
             return `${isNegative ? "-" : ""}${grouped}${decPart ? separators.decimal + decPart : ""}`;
         }
-        // Default ("language", or unset): follow the interface's own language, untouched.
         return new Intl.NumberFormat(this._hass?.locale?.language, {
             minimumFractionDigits: trimmedDigits,
             maximumFractionDigits: trimmedDigits,
@@ -585,8 +583,6 @@ class WashingMachineCard extends HTMLElement {
             null);
     }
 
-    // Home Assistant's frontend performs standard card actions on a "hass-action" event,
-    // including navigate, url, more-info, toggle, perform-action and confirmation dialogs.
     _handleImageTap() {
         const c = this._config;
         this.dispatchEvent(
@@ -677,6 +673,27 @@ class WashingMachineCard extends HTMLElement {
           <line x1="17.2" y1="14.4" x2="19.2" y2="14.4"/>
         </svg>`;
         }
+        if (type === "airco") {
+            return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12h20"/>
+          <path d="M4 8h16"/>
+          <path d="M6 16h12"/>
+          <circle cx="12" cy="12" r="2" fill="#f0a04b" stroke="none"/>
+        </svg>`;
+        }
+        if (type === "drying_rack") {
+            return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7h18"/>
+          <path d="M5 7l4 12"/>
+          <path d="M19 7l-4 12"/>
+          <path d="M8 12h8"/>
+          <circle cx="12" cy="7" r="1.2" fill="#f0a04b" stroke="none"/>
+        </svg>`;
+        }
         return `
       <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
            stroke-linecap="round" stroke-linejoin="round">
@@ -698,6 +715,10 @@ class WashingMachineCard extends HTMLElement {
             return this._svgOven(u);
         if (type === "microwave")
             return this._svgMicrowave(u);
+        if (type === "drying_rack")
+            return this._svgDryingRack(u);
+        if (type === "airco")
+            return this._svgAirco(u);
         return this._svgWasher(u);
     }
 
@@ -752,8 +773,7 @@ class WashingMachineCard extends HTMLElement {
           <circle cx="110" cy="115" r="11"   fill="#fbbc05"/>
           <circle cx="103" cy="135" r="8"    fill="#f28b82" opacity=".9"/>
         </g>
-        <ellipse cx="94" cy="106" rx="22" ry="13" fill="#ffffff" opacity=".14"
-                 transform="rotate(-24 94 106)"/>
+        <ellipse cx="94" cy="106" rx="22" ry="13" fill="#ffffff" opacity=".14" transform="rotate(-24 94 106)"/>
         <circle cx="110" cy="128" r="42" fill="none" stroke="#0d1526" stroke-width="2" opacity=".35"/>
         <g class="arcs">
           <circle cx="110" cy="128" r="53" fill="none" stroke="#2f80ed" stroke-width="5.5"
@@ -797,9 +817,7 @@ class WashingMachineCard extends HTMLElement {
             <stop offset="1" stop-color="#ffb347" stop-opacity="0"/>
           </radialGradient>
         </defs>
-        ${this._svgChassis(u, {
-            topPanel: top
-        })}
+        ${this._svgChassis(u, { topPanel: top })}
         <circle cx="110" cy="128" r="58" fill="url(#${u}-ring)"/>
         <circle cx="110" cy="128" r="58" fill="none" stroke="#c2cbd6" stroke-width="1.4"/>
         <circle cx="110" cy="128" r="47" fill="#e3e9f0"/>
@@ -869,9 +887,7 @@ class WashingMachineCard extends HTMLElement {
             <rect x="56" y="60" width="108" height="120" rx="8"/>
           </clipPath>
         </defs>
-        ${this._svgChassis(u, {
-            topPanel: top
-        })}
+        ${this._svgChassis(u, { topPanel: top })}
         <rect x="48" y="52" width="124" height="148" rx="12" fill="url(#${u}-frame)"/>
         <rect x="48" y="52" width="124" height="148" rx="12" fill="none" stroke="#c2cbd6" stroke-width="1.4"/>
         <rect x="56" y="60" width="108" height="120" rx="8" fill="url(#${u}-glass)"/>
@@ -924,12 +940,9 @@ class WashingMachineCard extends HTMLElement {
             <circle class="dw-drop" cx="98" cy="108" r="1.7"/>
           </g>
         </g>
-        <rect x="62" y="66" width="36" height="18" rx="6" fill="#ffffff" opacity=".12"
-              transform="rotate(-12 80 75)"/>
+        <rect x="62" y="66" width="36" height="18" rx="6" fill="#ffffff" opacity=".12" transform="rotate(-12 80 75)"/>
         <rect x="56" y="60" width="108" height="120" rx="8" fill="none" stroke="#0d1526" stroke-width="2" opacity=".3"/>
-        <rect class="dw-frame" x="52" y="56" width="116" height="140" rx="10" fill="none"
-              stroke="#2f80ed" stroke-width="4" stroke-linecap="round"
-              stroke-dasharray="90 70" opacity=".9"/>
+        <rect class="dw-frame" x="52" y="56" width="116" height="140" rx="10" fill="none" stroke="#2f80ed" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 70" opacity=".9"/>
         <rect x="78" y="188" width="64" height="7" rx="3.5" fill="#cfd7e0" stroke="#b4bec9" stroke-width="1"/>
       </svg>`;
     }
@@ -1004,12 +1017,9 @@ class WashingMachineCard extends HTMLElement {
             <ellipse cx="132" cy="174" rx="10" ry="4" opacity=".5"/>
           </g>
         </g>
-        <rect x="58" y="86" width="34" height="16" rx="5" fill="#ffffff" opacity=".1"
-              transform="rotate(-10 75 94)"/>
+        <rect x="58" y="86" width="34" height="16" rx="5" fill="#ffffff" opacity=".1" transform="rotate(-10 75 94)"/>
         <rect x="52" y="80" width="116" height="102" rx="8" fill="none" stroke="#0d1526" stroke-width="2" opacity=".3"/>
-        <rect class="ov-frame" x="48" y="76" width="124" height="120" rx="10" fill="none"
-              stroke="#f0a04b" stroke-width="4" stroke-linecap="round"
-              stroke-dasharray="90 70" opacity=".9"/>
+        <rect class="ov-frame" x="48" y="76" width="124" height="120" rx="10" fill="none" stroke="#f0a04b" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 70" opacity=".9"/>
         <rect x="78" y="188" width="64" height="8" rx="4" fill="#cfd7e0" stroke="#b4bec9" stroke-width="1"/>
       </svg>`;
     }
@@ -1074,8 +1084,7 @@ class WashingMachineCard extends HTMLElement {
           </g>
           <ellipse cx="100" cy="178" rx="34" ry="8" fill="#3a4a60" opacity=".5"/>
           <ellipse cx="100" cy="170" rx="28" ry="8" fill="#e8eef6" opacity=".95"/>
-          <ellipse class="mw-rim" cx="100" cy="170" rx="28" ry="8" fill="none"
-                  stroke="#f0a04b" stroke-width="2.2"/>
+          <ellipse class="mw-rim" cx="100" cy="170" rx="28" ry="8" fill="none" stroke="#f0a04b" stroke-width="2.2"/>
           <ellipse cx="100" cy="169" rx="14" ry="3.5" fill="#d5dde8" opacity=".65"/>
           <g class="mw-mug">
             <ellipse cx="108" cy="171" rx="2.4" ry="1.5" fill="#e25b2a" opacity=".9"/>
@@ -1087,13 +1096,88 @@ class WashingMachineCard extends HTMLElement {
             <ellipse cx="100" cy="159" rx="4.5" ry="1.4" fill="#ffb070" opacity=".4"/>
           </g>
         </g>
-        <rect x="52" y="116" width="28" height="14" rx="5" fill="#ffffff" opacity=".1"
-              transform="rotate(-12 66 123)"/>
+        <rect x="52" y="116" width="28" height="14" rx="5" fill="#ffffff" opacity=".1" transform="rotate(-12 66 123)"/>
         <rect x="46" y="110" width="100" height="78" rx="8" fill="none" stroke="#0d1526" stroke-width="2" opacity=".3"/>
-        <rect class="mw-frame" x="42" y="106" width="108" height="86" rx="10" fill="none"
-              stroke="#f0a04b" stroke-width="4" stroke-linecap="round"
-              stroke-dasharray="70 55" opacity=".9"/>
+        <rect class="mw-frame" x="42" y="106" width="108" height="86" rx="10" fill="none" stroke="#f0a04b" stroke-width="4" stroke-linecap="round" stroke-dasharray="70 55" opacity=".9"/>
         <rect x="42" y="130" width="6" height="36" rx="3" fill="#cfd7e0" stroke="#b4bec9" stroke-width="1"/>
+      </svg>`;
+    }
+
+_svgDryingRack(u) {
+        return `
+      <svg class="machine" id="machine" viewBox="0 0 220 232" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="${u}-body" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#f2f5f9"/>
+            <stop offset="1" stop-color="#d9e0e9"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="110" cy="222" rx="76" ry="8" fill="#20304a" opacity=".16"/>
+        <rect x="30" y="8" width="160" height="204" rx="18" fill="url(#${u}-body)"/>
+        <rect x="30" y="8" width="160" height="204" rx="18" fill="none" stroke="#c7cfda" stroke-width="1.4"/>
+        <rect x="48" y="210" width="10" height="7" rx="3" fill="#9aa6b4"/>
+        <rect x="162" y="210" width="10" height="7" rx="3" fill="#9aa6b4"/>
+        
+        <!-- Display Bovenin -->
+        <rect x="75" y="18" width="70" height="18" rx="9" fill="#0d1526"/>
+        <text id="dispTime" x="103" y="31" text-anchor="middle"
+              font-family="ui-monospace, 'SF Mono', Consolas, monospace"
+              font-size="11.5" font-weight="700" fill="#e8f1ff" letter-spacing="1">--:--</text>
+        <circle id="dispDot" cx="136" cy="27" r="2.4" fill="#22b263"/>
+
+        <!-- Droogrek Frame -->
+        <g transform="translate(0, 10)">
+          <!-- Poten en bovenbalk -->
+          <path d="M40 85 L110 60 L180 85" fill="none" stroke="#9aa6b4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M65 77 L85 160" fill="none" stroke="#7d8894" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M155 77 L135 160" fill="none" stroke="#7d8894" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="110" cy="60" r="5" fill="#31415a"/>
+
+          <!-- Horizontale Droogdraden (veranderen van kleur bij Aan / Uit) -->
+          <g class="rack-lines">
+            <path d="M60 100 L160 100" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M63 110 L157 110" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M52 120 L168 120" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M55 130 L165 130" stroke-width="2.8" stroke-linecap="round"/>
+          </g>
+        </g>
+      </svg>`;
+    }
+_svgAirco(u) {
+        return `
+      <svg class="machine" id="machine" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="${u}-cool-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="${u}-heat-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f97316" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Luchtstroom streepjes -->
+        <g class="ac-airflow">
+          <path class="flow-line line-1" d="M 45 80 Q 40 100 35 115" />
+          <path class="flow-line line-2" d="M 75 82 Q 73 102 70 118" />
+          <path class="flow-line line-3" d="M 100 83 Q 100 103 100 119" />
+          <path class="flow-line line-4" d="M 125 82 Q 127 102 130 118" />
+          <path class="flow-line line-5" d="M 155 80 Q 160 100 165 115" />
+        </g>
+
+        <!-- Airco Behuizing -->
+        <rect x="20" y="20" width="160" height="60" rx="8" fill="var(--wm-icon-bg, #ffffff)" stroke="var(--wm-divider, #cbd5e1)" stroke-width="2"/>
+        <rect x="135" y="32" width="30" height="14" rx="3" fill="#1e293b" />
+        <text id="acTemp" x="150" y="43" font-size="9" fill="#38bdf8" text-anchor="middle" font-family="sans-serif">20°</text>
+        <circle cx="130" cy="39" r="2" fill="#22c55e" id="dispDot"/>
+        <line x1="30" y1="65" x2="170" y2="65" stroke="var(--wm-divider, #e2e8f0)" stroke-width="1"/>
+
+        <!-- Beweegbare Klep / Louver -->
+        <g class="ac-louver-group">
+          <path class="ac-louver" d="M 25 78 L 175 78 C 175 83, 165 85, 100 85 C 35 85, 25 83, 25 78 Z" fill="var(--wm-badge-bg, #e2e8f0)" stroke="var(--wm-muted, #94a3b8)" stroke-width="1"/>
+        </g>
       </svg>`;
     }
 
@@ -1102,8 +1186,10 @@ class WashingMachineCard extends HTMLElement {
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
+        
+        // 1. HTML inladen
         root.innerHTML = `
-      <style>
+          <style>
         :host {
           display: block;
           --wm-grad: linear-gradient(180deg, #edf3fb 0%, #e4edf8 55%, #dfe9f6 100%);
@@ -1165,6 +1251,11 @@ class WashingMachineCard extends HTMLElement {
           --wm-divider: rgba(255,255,255,.09);
           --wm-appliance-dim: .93;
         }
+        /* Voeg deze regel toe voor het droogrek in dark mode: */
+        :host(.wm-dark) .rack-lines path {
+          stroke: #7d8894 !important;
+        }
+    
         :host(.wm-native) {
           --wm-grad: var(--ha-card-background, var(--card-background-color, #fff));
           --wm-text: var(--primary-text-color, #1c2733);
@@ -1221,6 +1312,7 @@ class WashingMachineCard extends HTMLElement {
           font-family: var(--paper-font-body1_-_font-family, inherit);
           box-shadow: var(--ha-card-box-shadow, var(--wm-card-shadow));
         }
+          
         ha-card::before {
           content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
           background: linear-gradient(90deg, #2f80ed, #56a8ff);
@@ -1463,6 +1555,30 @@ class WashingMachineCard extends HTMLElement {
         .lc-value { font-size: 14.5px; font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
         .lc-unit { font-size: 11px; font-weight: 700; color: var(--wm-accent); }
         .hidden { display: none !important; }
+/* Standaard (Uit / Idle): Grijs */
+        .rack-lines path {
+          stroke: #b0bac6 !important;
+          transition: stroke 0.3s ease;
+        }
+
+        /* Standaard (Uit / Idle): Mooi lichtgrijs in Dark mode */
+        :host(.wm-dark) .rack-lines path {
+          stroke: #7d8894 !important;
+        }
+
+        /* Als het droogrek AAN staat (Running): Geel/Oranje in zowel Light als Dark mode */
+        .running .rack-lines path,
+        #wrap.running .rack-lines path,
+        :host(.wm-dark) .running .rack-lines path {
+          stroke: #f0a04b !important;
+          animation: rackPulse 2s ease-in-out infinite alternate;
+        }
+
+
+        @keyframes rackPulse {
+          0% { stroke: #f0a04b; filter: drop-shadow(0 0 1px rgba(240, 160, 75, 0.4)); }
+          100% { stroke: #ffb75e; filter: drop-shadow(0 0 4px rgba(240, 160, 75, 0.8)); }
+        }
       </style>
 
       <ha-card>
@@ -1536,6 +1652,20 @@ class WashingMachineCard extends HTMLElement {
 
         this._el = (id) => root.getElementById(id);
 
+        // Event listeners koppelen
+        const mainCard = root.querySelector(".card") || root.firstElementChild;
+        if (mainCard && c.climate_entity) {
+            mainCard.style.cursor = "pointer";
+            mainCard.onclick = () => {
+                const event = new Event("hass-more-info", {
+                    bubbles: true,
+                    composed: true
+                });
+                event.detail = { entityId: c.climate_entity };
+                this.dispatchEvent(event);
+            };
+        }
+
         const mi = (ent) => () => this._moreInfo(ent);
         this._el("chartBtn").addEventListener("click", mi(c.power_entity || c.status_entity));
         if (c.power_entity)
@@ -1553,8 +1683,6 @@ class WashingMachineCard extends HTMLElement {
         if (c.cost_entity)
             this._el("lcCost").addEventListener("click", mi(c.cost_entity));
 
-        // #26: optional action when the appliance illustration is tapped.
-        // Unset (or action: none) keeps the illustration inert, as before.
         const imageTap = c.image_tap_action;
         if (imageTap && imageTap.action && imageTap.action !== "none") {
             const machine = this._el("machine");
@@ -1608,13 +1736,36 @@ class WashingMachineCard extends HTMLElement {
         const remainingMinutes = active ? this._remainingMinutes() : null;
         const remainingClock = this._fmtRemaining(remainingMinutes);
         const liveClock = remainingClock ?? clock;
-        this._el("dispTime").textContent = active ? (liveClock || "0:00") : "--:--";
-        this._el("dispDot").setAttribute("fill", running ? "#22b263" : "#4a5871");
+        const dispTime = this._el("dispTime");
+        if (dispTime) dispTime.textContent = active ? (liveClock || "0:00") : "--:--";
+        const dispDot = this._el("dispDot");
+        if (dispDot) dispDot.setAttribute("fill", running ? "#22b263" : "#4a5871");
         this._el("ringTime").textContent = active ? (liveClock || "…") : "—";
         const ringState = ["running", "idle", "paused", "standby"].includes(displayState) ? displayState : "off";
         this._el("ringLabel").textContent = remainingClock !== null ? t.ring_remaining : t[`ring_${ringState}`];
         this._el("ringArc").style.display = active ? "" : "none";
-        if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
+        if (this._applianceType === "airco" && c.climate_entity && this._hass.states[c.climate_entity]) {
+            const climState = this._hass.states[c.climate_entity].state;
+            const climMap = {
+                cool: "Koelt",
+                heat: "Verwarmt",
+                dry: "Ontvochtigt",
+                fan_only: "Ventileert",
+                auto: "Automatisch",
+                off: "Uit"
+            };
+            this._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
+
+            const cardContainer = this.shadowRoot.querySelector(".card");
+            if (cardContainer) {
+                cardContainer.classList.remove("mode-cool", "mode-heat", "mode-dry", "mode-fan_only", "mode-auto", "ac-on", "ac-off");
+                if (climState === "off") {
+                    cardContainer.classList.add("ac-off");
+                } else {
+                    cardContainer.classList.add("ac-on", `mode-${climState}`);
+                }
+            }
+        } else if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
             const rawState = status ? String(status.state) : "";
             const capitalizedRaw = WashingMachineCard.capitalize(rawState, t.locale);
             this._el("stState").textContent = noData ? t.state_nodata : capitalizedRaw;
@@ -1631,6 +1782,26 @@ class WashingMachineCard extends HTMLElement {
         this._el("lcDurationLabel").textContent = t.duration;
         this._el("lcEnergyLabel").textContent = t.energy;
         this._el("lcCostLabel").textContent = t.cost;
+        const climateEntity = this._hass.states[c.climate_entity];
+
+        if (climateEntity) {
+            const mode = climateEntity.state; // 'cool', 'heat', 'dry', 'fan_only', 'auto', 'off'
+            const targetTemp = climateEntity.attributes.temperature || '--';
+      
+      // Update het LED schermpje op de airco SVG
+            const tempDisplay = this.shadowRoot.getElementById("ac-temp-display");
+        if (tempDisplay) tempDisplay.textContent = `${targetTemp}°`;
+
+      // Reset oude modus-klassen op het hoofd-element
+          wrap.classList.remove("ac-off", "ac-on", "mode-cool", "mode-heat", "mode-dry", "mode-fan_only", "mode-auto");
+
+      // Pas nieuwe klassen toe
+        if (mode === "off") {
+          wrap.classList.add("ac-off");
+      } else {
+          wrap.classList.add("ac-on", `mode-${mode}`);
+      }
+    }
 
         if (c.power_entity) {
             const ps = this._st(c.power_entity);
@@ -1727,9 +1898,7 @@ class KeywordsLangCache {
         if (this._storage) {
             try {
                 return this._storage.getItem(this._prefix + key) !== null;
-            } catch (e) {
-                // fall through to memory
-            }
+            } catch (e) {}
         }
         return this._memory.has(key);
     }
@@ -1738,9 +1907,7 @@ class KeywordsLangCache {
             try {
                 const v = this._storage.getItem(this._prefix + key);
                 return v === null ? undefined : v;
-            } catch (e) {
-                // fall through to memory
-            }
+            } catch (e) {}
         }
         return this._memory.get(key);
     }
@@ -1749,9 +1916,7 @@ class KeywordsLangCache {
             try {
                 this._storage.setItem(this._prefix + key, value);
                 return;
-            } catch (e) {
-                // fall through to memory
-            }
+            } catch (e) {}
         }
         this._memory.set(key, value);
     }
@@ -1760,9 +1925,7 @@ class KeywordsLangCache {
             try {
                 this._storage.removeItem(this._prefix + key);
                 return;
-            } catch (e) {
-                // fall through to memory
-            }
+            } catch (e) {}
         }
         this._memory.delete(key);
     }
@@ -1864,8 +2027,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "select",
                         title: "Appliance type",
                         required: true,
-                    default:
-                        D.appliance_type,
+                        default: D.appliance_type,
                         selector: {
                             select: {
                                 mode: "dropdown",
@@ -1884,6 +2046,12 @@ class WashingMachineCardEditor extends HTMLElement {
                                     }, {
                                         value: "microwave",
                                         label: "Microwave"
+                                    }, {
+                                        value: "drying_rack",
+                                        label: "Drying rack"
+                                    }, {
+                                        value: "airco",
+                                        label: "Airco"
                                     },
                                 ],
                             },
@@ -1906,8 +2074,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "select",
                         title: "Language",
                         required: true,
-                    default:
-                        WashingMachineCardEditor.AUTO_LANGUAGE,
+                        default: WashingMachineCardEditor.AUTO_LANGUAGE,
                         selector: {
                             select: {
                                 mode: "dropdown",
@@ -1919,8 +2086,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "select",
                         title: "Theme",
                         required: true,
-                    default:
-                        D.theme,
+                        default: D.theme,
                         selector: {
                             select: {
                                 mode: "dropdown",
@@ -1945,8 +2111,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "select",
                         title: "Duration time format",
                         required: true,
-                    default:
-                        D.duration_format,
+                        default: D.duration_format,
                         selector: {
                             select: {
                                 mode: "dropdown",
@@ -1965,8 +2130,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "boolean",
                         title: "Hide status panel",
                         description: "Hide status panel only when appliance is off.",
-                    default:
-                        D.hide_status_panel,
+                        default: D.hide_status_panel,
                         selector: {
                             boolean: {}
                         },
@@ -1975,8 +2139,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "boolean",
                         title: "Show raw status value",
                         description: "Display the raw value of the status entity in the card's status panel.",
-                    default:
-                        D.show_raw_status,
+                        default: D.show_raw_status,
                         selector: {
                             boolean: {}
                         },
@@ -2017,8 +2180,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         key: "power_threshold",
                         kind: "number",
                         title: "Running threshold (W)",
-                    default:
-                        D.power_threshold,
+                        default: D.power_threshold,
                         min: 0,
                     }, {
                         key: "standby_threshold",
@@ -2031,8 +2193,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         key: "power_max",
                         kind: "number",
                         title: "Gauge max (W)",
-                    default:
-                        D.power_max,
+                        default: D.power_max,
                         min: 1,
                     },
                 ],
@@ -2053,8 +2214,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         kind: "boolean",
                         title: "Confirm before turning off plug",
                         description: "Show a confirmation popup when turning off the plug entity.",
-                    default:
-                        D.confirm_plug_off,
+                        default: D.confirm_plug_off,
                         selector: {
                             boolean: {}
                         },
@@ -2120,8 +2280,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         key: "currency",
                         kind: "text",
                         title: "Currency symbol",
-                    default:
-                        D.currency,
+                        default: D.currency,
                     },
                 ],
             },
@@ -2142,11 +2301,105 @@ class WashingMachineCardEditor extends HTMLElement {
     }
 
     _build() {
+        const sections = WashingMachineCardEditor._sections;  
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
         root.innerHTML = `
       <style>
+        /* Airco Basis Stijlen */
+        .ac-display-wrap {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          padding: 10px 0;
+        }
+        .ac-svg {
+          width: 220px;
+          height: auto;
+          overflow: visible;
+        }
+
+        /* Klep animatie */
+        .ac-louver {
+          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          transform-origin: 100px 78px;
+        }
+        
+        /* ALS UIT: Klep dicht klappen & Display uit */
+        .ac-off .ac-louver {
+          transform: rotateX(-75deg) translateY(-4px);
+        }
+        .ac-off #ac-temp-display,
+        .ac-off #ac-led {
+          opacity: 0.1;
+        }
+        .ac-off .ac-airflow {
+          display: none;
+        }
+
+        /* ALS AAN: Klep open */
+        .ac-on .ac-louver {
+          transform: rotateX(0deg) translateY(6px);
+        }
+
+        /* Luchtstroom lijnen basis */
+        .flow-line {
+          fill: none;
+          stroke-width: 4;
+          stroke-linecap: round;
+          opacity: 0;
+          transition: stroke 0.4s ease, opacity 0.4s ease;
+        }
+
+        /* Stand 1: KOELEN (Blauw & Geanimeerd) */
+        .mode-cool .flow-line {
+          stroke: #3b82f6;
+          opacity: 0.8;
+          animation: coolStream 1.5s infinite ease-in-out alternate;
+        }
+        
+        /* Stand 2: VERWARMEN (Oranje/Rood) */
+        .mode-heat .flow-line {
+          stroke: #f97316;
+          opacity: 0.8;
+          animation: heatStream 1.5s infinite ease-in-out alternate;
+        }
+
+        /* Stand 3 & 4: ONTVOCHTIGEN / VENTILATOR (Grijs) */
+        .mode-dry .flow-line,
+        .mode-fan_only .flow-line {
+          stroke: #94a3b8;
+          opacity: 0.6;
+          animation: coolStream 2s infinite ease-in-out alternate;
+        }
+
+        /* Stand 5: AUTO (Regenboog/Sfeer of zachtblauw) */
+        .mode-auto .flow-line {
+          stroke: #06b6d4;
+          opacity: 0.8;
+          animation: coolStream 1.2s infinite ease-in-out alternate;
+        }
+
+        /* Animaties voor de luchtstroom */
+        @keyframes coolStream {
+          0% { stroke-dasharray: 2 10; stroke-dashoffset: 0; opacity: 0.3; }
+          100% { stroke-dasharray: 15 5; stroke-dashoffset: -15; opacity: 0.9; }
+        }
+        @keyframes heatStream {
+          0% { stroke-dasharray: 4 8; stroke-dashoffset: 0; opacity: 0.4; filter: drop-shadow(0 0 2px #f97316); }
+          100% { stroke-dasharray: 20 4; stroke-dashoffset: -10; opacity: 1; filter: drop-shadow(0 0 5px #ef4444); }
+        }
+
+        /* Dark mode ondersteuning voor Airco */
+        :host(.wm-dark) .ac-svg rect[fill="#ffffff"] {
+          fill: #1e293b !important;
+          stroke: #334155 !important;
+        }
+        :host(.wm-dark) .ac-louver {
+          fill: #334155 !important;
+          stroke: #475569 !important;
+        }
         :host { display: block; }
         .wm-editor { display: flex; flex-direction: column; gap: 16px; padding: 4px 0 8px; }
         .wm-field { display: flex; flex-direction: column; gap: 6px; }
@@ -2234,9 +2487,9 @@ class WashingMachineCardEditor extends HTMLElement {
       </style>
       <div class="wm-editor" id="editor"></div>
     `;
-
+        
         const editor = root.getElementById("editor");
-        const sections = WashingMachineCardEditor._sections;
+
 
         sections.forEach((section) => {
             const panel = document.createElement("ha-expansion-panel");
@@ -2393,7 +2646,7 @@ class WashingMachineCardEditor extends HTMLElement {
                 if (field.kind === "keywords") {
                     if (!this._focusedElements.has(el.input)) {
                         if (this._hasConfidentLanguageReading()) {
-                            const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
+                            const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass)
                             this._migrateKeywordsOnLanguageChange(field, this._lastKnownLang);
                             this._lastKnownLang = lang;
                         }
@@ -2454,10 +2707,6 @@ class WashingMachineCardEditor extends HTMLElement {
         this._syncValues();
     }
 
-    // When the selected language changes, a previously-saved custom list is
-    // still anchored to the *old* language's defaults. Swap those out for the
-    // new language's defaults while keeping any keywords the user added that
-    // aren't part of the old language's built-in list.
     _migrateKeywordsOnLanguageChange(field, oldLang) {
         const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
         const raw = this._config[field.key];
@@ -2530,7 +2779,7 @@ class WashingMachineCardEditor extends HTMLElement {
         const sameAsDefault = words.length === defaults.length &&
             defaults.every((word) => words.includes(word));
         const isDefault = words.length === 0 || sameAsDefault;
-        const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass);
+        const lang = WashingMachineCardEditor._resolveLanguage(this._config, this._hass)
         const cache = WashingMachineCardEditor._keywordsLangCache;
         const cacheKey = WashingMachineCardEditor._keywordsCacheKey(this._config);
         if (isDefault)
@@ -2586,43 +2835,7 @@ window.customCards.push({
     type: "washing-machine-card",
     name: "Washing Machine Animated Card",
     description:
-    "Oikos-style animated appliance card (washer / dryer / dishwasher / oven / microwave): live status, power gauge, last-cycle stats, light and dark theme",
-	preview: true,
-	documentationURL: "https://github.com/sionetta/wm_animated_ha_card",
+    "Oikos-style animated appliance card (washer / dryer / dishwasher / oven / microwave / drying_rack / airco): live status, power gauge, last-cycle stats, light and dark theme",
+    preview: true,
+    documentationURL: "https://github.com/sionetta/wm_animated_ha_card",
 });
-
-/* ============================================================
-Example configuration:
-
-type: custom:washing-machine-card
-appliance_type: washer                      # washer | dryer | dishwasher | oven | microwave
-name: Washing machine
-status_entity: binary_sensor.washing_in_progress
-plug_entity: switch.washing_machine_plug
-notify_entity: automation.washing_finished
-image_tap_action:                           # optional: what tapping the illustration does
-  action: navigate
-  navigation_path: /lovelace/laundry
-power_entity: sensor.washing_machine_power
-remaining_entity: sensor.washing_machine_remaining_time  # optional: minutes, end timestamp, or H:MM:SS
-power_threshold: 10
-standby_threshold: 1                        # optional: no cycle but power above this (W) shows STANDBY
-power_max: 2500
-last_wash_entity: input_datetime.wm_last_start
-duration_entity: input_number.wm_last_duration
-duration_format: minutes                    # minutes | hhmm (e.g. "1h05" once it reaches 60 min)
-energy_entity: input_number.wm_last_energy
-cost_entity: input_number.wm_last_cost
-currency: "€"
-language: auto                              # auto | en | ru | de | fr | nl | pt | el (auto = match Home Assistant's language)
-theme: auto                                 # auto | light | dark | ha (ha = native Home Assistant colours)
-hide_status_panel: false                    # true hides the status panel while idle
-show_raw_status: false                      # true shows the raw value of the status entity in the card's status panel (hidden in the editor when status_entity is an input_boolean)
-confirm_plug_off: true                      # true displays a confirmation popup before turning off the `plug_entity`.
-
-# Other appliances — same config, one line changed:
-# appliance_type: dryer        (alias: tumbler)
-# appliance_type: dishwasher
-# appliance_type: oven
-# appliance_type: microwave
-============================================================ */
