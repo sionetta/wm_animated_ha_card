@@ -710,6 +710,8 @@ class WashingMachineCard extends HTMLElement {
             return this._svgMicrowave(u);
         if (type === "drying_rack")
             return this._svgDryingRack(u);
+        if (type === "airco")
+            return this._svgAirco(u);
         return this._svgWasher(u);
     }
 
@@ -2792,7 +2794,7 @@ window.customCards.push({
     type: "washing-machine-card",
     name: "Washing Machine Animated Card",
     description:
-    "Oikos-style animated appliance card (washer / dryer / dishwasher / oven / microwave / drying_rack): live status, power gauge, last-cycle stats, light and dark theme",
+    "Oikos-style animated appliance card (washer / dryer / dishwasher / oven / microwave / drying_rack / airco): live status, power gauge, last-cycle stats, light and dark theme",
     preview: true,
     documentationURL: "https://github.com/sionetta/wm_animated_ha_card",
 });
