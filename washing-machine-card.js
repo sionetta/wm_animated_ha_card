@@ -1757,7 +1757,6 @@ _svgAirco(u) {
         this._el("ringArc").style.display = active ? "" : "none";
         if (this._applianceType === "airco" && c.climate_entity && this._hass.states[c.climate_entity]) {
             const climState = this._hass.states[c.climate_entity].state;
-            // Vertaal de climate statussen naar nette leesbare teksten
             const climMap = {
                 cool: "Koelt",
                 heat: "Verwarmt",
@@ -1768,8 +1767,7 @@ _svgAirco(u) {
             };
             this._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
 
-            // 2. Zet de juiste animatie-klassen op de kaart (voor de klep en kleurtjes)
-            const cardContainer = this.shadowRoot.querySelector(".card"); // of de hoofdcontainer van je kaart
+            const cardContainer = this.shadowRoot.querySelector(".card");
             if (cardContainer) {
                 cardContainer.classList.remove("mode-cool", "mode-heat", "mode-dry", "mode-fan_only", "mode-auto", "ac-on", "ac-off");
                 if (climState === "off") {
