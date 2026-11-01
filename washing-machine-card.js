@@ -1180,9 +1180,7 @@ _svgAirco(u) {
         </g>
       </svg>`;
     }
-        </svg>
-      </div>`;
-    }
+
     _build() {
         const c = this._config;
         const root = this.shadowRoot || this.attachShadow({
