@@ -1186,6 +1186,34 @@ _svgAirco(u) {
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
+        
+        // 1. HTML inladen
+        root.innerHTML = `
+          <style>
+            /* stijlen... */
+          </style>
+          <ha-card>
+            <div class="wrap idle" id="wrap">
+              <!-- HTML inhoud -->
+            </div>
+          </ha-card>
+        `;
+
+        // 2.  .wrap en de klik-actie koppelen
+        const mainCard = root.querySelector(".wrap") || root.firstElementChild;
+        if (mainCard && c.climate_entity) {
+            mainCard.style.cursor = "pointer";
+            mainCard.onclick = () => {
+                const event = new Event("hass-more-info", {
+                    bubbles: true,
+                    composed: true
+                });
+                event.detail = { entityId: c.climate_entity };
+                this.dispatchEvent(event);
+            };
+        }
+    }
+        });
         root.innerHTML = `
       <style>
         :host {
@@ -1739,7 +1767,7 @@ _svgAirco(u) {
                 auto: "Automatisch",
                 off: "Uit"
             };
-            tthis._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
+            this._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
 
             // 2. Zet de juiste animatie-klassen op de kaart (voor de klep en kleurtjes)
             const cardContainer = this.shadowRoot.querySelector(".card"); // of de hoofdcontainer van je kaart
