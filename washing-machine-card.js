@@ -1143,7 +1143,7 @@ _svgDryingRack(u) {
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
-        root.inner = `
+        root.innerHTML = `
       <style>
         :host {
           display: block;
