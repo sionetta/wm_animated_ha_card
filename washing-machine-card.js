@@ -1649,7 +1649,6 @@ _svgAirco(u) {
         </div>
       </ha-card>
     `;
- </style>
 
 
 
