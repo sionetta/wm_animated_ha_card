@@ -2489,7 +2489,7 @@ class WashingMachineCardEditor extends HTMLElement {
     `;
         
         const editor = root.getElementById("editor");
-        const sections = WashingMachineCardEditor._sections;
+
 
         sections.forEach((section) => {
             const panel = document.createElement("ha-expansion-panel");
