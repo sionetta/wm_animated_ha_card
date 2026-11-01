@@ -666,6 +666,16 @@ class WashingMachineCard extends HTMLElement {
           <line x1="17.2" y1="14.4" x2="19.2" y2="14.4"/>
         </svg>`;
         }
+        if (type === "airco") {
+            return `
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12h20"/>
+          <path d="M4 8h16"/>
+          <path d="M6 16h12"/>
+          <circle cx="12" cy="12" r="2" fill="#f0a04b" stroke="none"/>
+        </svg>`;
+        }
         if (type === "drying_rack") {
             return `
         <svg viewBox="0 0 24 24" fill="none" stroke="#2f80ed" stroke-width="1.9"
@@ -1997,7 +2007,10 @@ class WashingMachineCardEditor extends HTMLElement {
                                         label: "Microwave"
                                     }, {
                                         value: "drying_rack",
-                                        label: ""
+                                        label: "Drying rack"
+                                    }, {
+                                        value: "airco",
+                                        label: "Airco"
                                     },
                                 ],
                             },
