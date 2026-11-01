@@ -1723,8 +1723,10 @@ _svgAirco(u) {
         const remainingMinutes = active ? this._remainingMinutes() : null;
         const remainingClock = this._fmtRemaining(remainingMinutes);
         const liveClock = remainingClock ?? clock;
-        this._el("dispTime").textContent = active ? (liveClock || "0:00") : "--:--";
-        this._el("dispDot").setAttribute("fill", running ? "#22b263" : "#4a5871");
+        const dispTime = this._el("dispTime");
+        if (dispTime) dispTime.textContent = active ? (liveClock || "0:00") : "--:--";
+        const dispDot = this._el("dispDot");
+        if (dispDot) dispDot.setAttribute("fill", running ? "#22b263" : "#4a5871");
         this._el("ringTime").textContent = active ? (liveClock || "…") : "—";
         const ringState = ["running", "idle", "paused", "standby"].includes(displayState) ? displayState : "off";
         this._el("ringLabel").textContent = remainingClock !== null ? t.ring_remaining : t[`ring_${ringState}`];
