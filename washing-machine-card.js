@@ -33,10 +33,11 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Oven", state_running: "Baking" },
                 microwave: { name: "Microwave", state_running: "Heating" },
                 drying_rack: { name: "Drying rack", state_running: "Heating" },
+                airco: { name: "Air conditioning", state_running: "Cooling / Heating" }
             },
             running_states: [
                 "washing", "running", "run", "wash", "spin", "rinse", "drying", "dry", "tumble",
-                "baking", "bake", "cooking", "cook", "heating", "heat", "microwave", "oven",
+                "baking", "bake", "cooking", "cook", "heating", "heat", "microwave", "oven", "on", "cool", "dehumidify", "fan",
             ],
         },
         ru: {
@@ -58,6 +59,8 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Духовка", state_running: "Выпечка" },
                 microwave: { name: "Микроволновка", state_running: "Разогрев" },
                 drying_rack: { name: "Сушилка для белья", state_running: "Сушка" },
+                airco: { name: "Кондиционирование", state_running: "Охлаждение / Нагрев" }
+                
             },
             running_states: [
                 "стирка", "отжим", "полоскание",
@@ -82,6 +85,7 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Backofen", state_running: "Backt" },
                 microwave: { name: "Mikrowelle", state_running: "Erwärmt" },
                 drying_rack: { name: "Wäscheständer", state_running: "Erwärmt" },
+                airco: { name: "Klimaanlage", state_running: "Kühlen / Heizen" }
             },
             running_states: [
                 "waschen", "läuft", "schleudern", "spülen", "trocknen",
@@ -106,6 +110,7 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Four", state_running: "Cuisson en cours" },
                 microwave: { name: "Micro-ondes", state_running: "Réchauffage en cours" },
                 drying_rack: { name: "Étendoir", state_running: "Séchage en cours" },
+                airco: { name: "Climatisation", state_running: "Refroidissement / Chauffage" }
             },
             running_states: [
                 "lavage", "en cours", "essorage", "rincage", "rinçage",
@@ -131,10 +136,11 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Oven", state_running: "Bakt" },
                 microwave: { name: "Magnetron", state_running: "Verwarmt" },
                 drying_rack: { name: "Droogrek", state_running: "Verwarmt" },
+                airco: { name: "Airco", state_running: "Koelt / Verwarmt" }
             },
             running_states: [
                 "wassen", "bezig", "centrifugeren", "spoelen", "drogen",
-                "bakken", "verwarmen",
+                "bakken", "verwarmen", "aan", "koelen", "ontvochtigen", "ventilator",
             ],
         },
         pt: {
@@ -156,12 +162,14 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Forno", state_running: "Assando" },
                 microwave: { name: "Micro-ondas", state_running: "Aquecendo" },
                 drying_rack: { name: "Estendal de roupa", state_running: "Secando" },
+                airco: { name: "Ar-condicionado", state_running: "Refrigeração / Aquecimento" }
             },
             running_states: [
                 "lavando", "lavagem", "lavagem longa", "lavagem normal", "lavagem curta", "em andamento", "rodando",
                 "centrifugação", "centrifugacao", "centrifugando", "enxágue", "enxague", "enxaguando", "enxaguar",
                 "secando", "secagem", "secar",
-                "assando", "assar", "cozinhando", "cozinhar", "aquecendo", "aquecer", "micro-ondas", "forno",
+                "assando", "assar", "cozinhando", "cozinhar", "aquecendo", "aquecer", "micro-ondas", "forno", "ligado", "aquecimento",
+                "resfriar", "aquecer", "desumidificar", "apenas_ventilação", "automático"
             ],
         },
         el: {
@@ -183,11 +191,12 @@ class WashingMachineCard extends HTMLElement {
                 oven: { name: "Φούρνος", state_running: "Ψήσιμο" },
                 microwave: { name: "Φούρνος μικροκυμάτων", state_running: "Ζέσταμα" },
                 drying_rack: { name: "Απλώστρα ρούχων", state_running: "Στέγνωμα" },
+                airco: { name: "Κλιματισμός", state_running: "Ψύξη / Θέρμανση" }
             },
             running_states: [
                 "πλύση", "πλυση", "πλύσιμο", "πλυσιμο", "ξέβγαλμα", "ξεβγαλμα", "στύψιμο", "στυψιμο",
                 "στέγνωμα", "στεγνωμα", "σε λειτουργία", "σε λειτουργια",
-                "ψήσιμο", "ψησιμο", "μαγείρεμα", "μαγειρεμα", "ζέσταμα", "ζεσταμα",
+                "ψήσιμο", "ψησιμο", "μαγείρεμα", "μαγειρεμα", "ζέσταμα", "ζεσταμα", "ενεργοποίηση", "ψύξη", "αφύγρανση", "ανεμιστήρας", "вкл", "охлаждать", "осушать", "вентилятор",
             ],
         },
     };
@@ -1120,7 +1129,7 @@ _svgDryingRack(u) {
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
-        root.innerHTML = `
+        root.inner = `
       <style>
         :host {
           display: block;
@@ -1556,7 +1565,49 @@ _svgDryingRack(u) {
               <div class="bar hidden" id="bar"><div class="bar-fill" id="barFill"></div></div>
             </div>
           </div>
+<div class="ac-display-wrap">
+  <svg class="ac-svg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Gradiënten voor de luchtstromen -->
+      <linearGradient id="cool-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="heat-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f97316" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="dry-flow" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#94a3b8" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#cbd5e1" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
 
+    <!-- Luchtstroom streepjes (Komen onder de klep vandaan) -->
+    <g class="ac-airflow">
+      <path class="flow-line line-1" d="M 45 80 Q 40 100 35 115" />
+      <path class="flow-line line-2" d="M 75 82 Q 73 102 70 118" />
+      <path class="flow-line line-3" d="M 100 83 Q 100 103 100 119" />
+      <path class="flow-line line-4" d="M 125 82 Q 127 102 130 118" />
+      <path class="flow-line line-5" d="M 155 80 Q 160 100 165 115" />
+    </g>
+
+    <!-- Airco Behuizing -->
+    <rect x="20" y="20" width="160" height="60" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <!-- Subtiel display op de airco -->
+    <rect x="135" y="32" width="30" height="14" rx="3" fill="#1e293b" />
+    <text id="ac-temp-display" x="150" y="43" font-size="9" fill="#38bdf8" text-anchor="middle" font-family="sans-serif">20°</text>
+    <circle cx="130" cy="39" r="2" fill="#22c55e" id="ac-led"/>
+
+    <!-- LG / Inverter details -->
+    <line x1="30" y1="65" x2="170" y2="65" stroke="#e2e8f0" stroke-width="1"/>
+
+    <!-- Beweegbare Klep / Louver -->
+    <g class="ac-louver-group">
+      <path class="ac-louver" d="M 25 78 L 175 78 C 175 83, 165 85, 100 85 C 35 85, 25 83, 25 78 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+    </g>
+  </svg>
+</div>
           <div class="panel hidden" id="lastCycle">
             <div class="lc-title" id="lcTitle"></div>
             <div class="lc-grid">
@@ -1677,6 +1728,27 @@ _svgDryingRack(u) {
         this._el("lcDurationLabel").textContent = t.duration;
         this._el("lcEnergyLabel").textContent = t.energy;
         this._el("lcCostLabel").textContent = t.cost;
+        const climateEntity = this._hass.states[c.climate_entity];
+        const wrap = this._el("wrap");
+
+        if (climateEntity) {
+            const mode = climateEntity.state; // 'cool', 'heat', 'dry', 'fan_only', 'auto', 'off'
+            const targetTemp = climateEntity.attributes.temperature || '--';
+      
+      // Update het LED schermpje op de airco SVG
+            const tempDisplay = this.shadowRoot.getElementById("ac-temp-display");
+        if (tempDisplay) tempDisplay.textContent = `${targetTemp}°`;
+
+      // Reset oude modus-klassen op het hoofd-element
+          wrap.classList.remove("ac-off", "ac-on", "mode-cool", "mode-heat", "mode-dry", "mode-fan_only", "mode-auto");
+
+      // Pas nieuwe klassen toe
+        if (mode === "off") {
+          wrap.classList.add("ac-off");
+      } else {
+          wrap.classList.add("ac-on", `mode-${mode}`);
+      }
+    }
 
         if (c.power_entity) {
             const ps = this._st(c.power_entity);
@@ -1710,7 +1782,7 @@ _svgDryingRack(u) {
             const s = this._st(c.duration_entity);
             const d = this._fmtDuration(s?.state);
             this._el("lcDuration").classList.remove("hidden");
-            this._el("lcDurationV").innerHTML = d
+            this._el("lcDurationV").inner = d
                  ? (d.unit ? `${d.value} <span class="lc-unit">${d.unit}</span>` : d.value)
                  : "—";
             anyLc = true;
@@ -2178,6 +2250,99 @@ class WashingMachineCardEditor extends HTMLElement {
         });
         root.innerHTML = `
       <style>
+        /* Airco Basis Stijlen */
+        .ac-display-wrap {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          padding: 10px 0;
+        }
+        .ac-svg {
+          width: 220px;
+          height: auto;
+          overflow: visible;
+        }
+
+        /* Klep animatie */
+        .ac-louver {
+          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          transform-origin: 100px 78px;
+        }
+        
+        /* ALS UIT: Klep dicht klappen & Display uit */
+        .ac-off .ac-louver {
+          transform: rotateX(-75deg) translateY(-4px);
+        }
+        .ac-off #ac-temp-display,
+        .ac-off #ac-led {
+          opacity: 0.1;
+        }
+        .ac-off .ac-airflow {
+          display: none;
+        }
+
+        /* ALS AAN: Klep open */
+        .ac-on .ac-louver {
+          transform: rotateX(0deg) translateY(6px);
+        }
+
+        /* Luchtstroom lijnen basis */
+        .flow-line {
+          fill: none;
+          stroke-width: 4;
+          stroke-linecap: round;
+          opacity: 0;
+          transition: stroke 0.4s ease, opacity 0.4s ease;
+        }
+
+        /* Stand 1: KOELEN (Blauw & Geanimeerd) */
+        .mode-cool .flow-line {
+          stroke: #3b82f6;
+          opacity: 0.8;
+          animation: coolStream 1.5s infinite ease-in-out alternate;
+        }
+        
+        /* Stand 2: VERWARMEN (Oranje/Rood) */
+        .mode-heat .flow-line {
+          stroke: #f97316;
+          opacity: 0.8;
+          animation: heatStream 1.5s infinite ease-in-out alternate;
+        }
+
+        /* Stand 3 & 4: ONTVOCHTIGEN / VENTILATOR (Grijs) */
+        .mode-dry .flow-line,
+        .mode-fan_only .flow-line {
+          stroke: #94a3b8;
+          opacity: 0.6;
+          animation: coolStream 2s infinite ease-in-out alternate;
+        }
+
+        /* Stand 5: AUTO (Regenboog/Sfeer of zachtblauw) */
+        .mode-auto .flow-line {
+          stroke: #06b6d4;
+          opacity: 0.8;
+          animation: coolStream 1.2s infinite ease-in-out alternate;
+        }
+
+        /* Animaties voor de luchtstroom */
+        @keyframes coolStream {
+          0% { stroke-dasharray: 2 10; stroke-dashoffset: 0; opacity: 0.3; }
+          100% { stroke-dasharray: 15 5; stroke-dashoffset: -15; opacity: 0.9; }
+        }
+        @keyframes heatStream {
+          0% { stroke-dasharray: 4 8; stroke-dashoffset: 0; opacity: 0.4; filter: drop-shadow(0 0 2px #f97316); }
+          100% { stroke-dasharray: 20 4; stroke-dashoffset: -10; opacity: 1; filter: drop-shadow(0 0 5px #ef4444); }
+        }
+
+        /* Dark mode ondersteuning voor Airco */
+        :host(.wm-dark) .ac-svg rect[fill="#ffffff"] {
+          fill: #1e293b !important;
+          stroke: #334155 !important;
+        }
+        :host(.wm-dark) .ac-louver {
+          fill: #334155 !important;
+          stroke: #475569 !important;
+        }
         :host { display: block; }
         .wm-editor { display: flex; flex-direction: column; gap: 16px; padding: 4px 0 8px; }
         .wm-field { display: flex; flex-direction: column; gap: 6px; }
