@@ -1213,7 +1213,6 @@ _svgAirco(u) {
                 this.dispatchEvent(event);
             };
         }
-        const editor = root.getElementById("editor");
         const sections = WashingMachineCardEditor._sections;
     
       <style>
