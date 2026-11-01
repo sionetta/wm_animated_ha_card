@@ -1779,7 +1779,6 @@ _svgAirco(u) {
                     cardContainer.classList.add("ac-on", `mode-${climState}`);
                 }
             }
-        }
         } else if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
             const rawState = status ? String(status.state) : "";
             const capitalizedRaw = WashingMachineCard.capitalize(rawState, t.locale);
