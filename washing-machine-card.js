@@ -1212,7 +1212,6 @@ _svgAirco(u) {
                 this.dispatchEvent(event);
             };
         }
-    }
         });
         root.innerHTML = `
       <style>
