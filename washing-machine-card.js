@@ -1170,7 +1170,7 @@ _svgAirco(u) {
         <!-- Airco Behuizing -->
         <rect x="20" y="20" width="160" height="60" rx="8" fill="var(--wm-icon-bg, #ffffff)" stroke="var(--wm-divider, #cbd5e1)" stroke-width="2"/>
         <rect x="135" y="32" width="30" height="14" rx="3" fill="#1e293b" />
-        <text id="dispTime" x="150" y="43" font-size="9" fill="#38bdf8" text-anchor="middle" font-family="sans-serif">20°</text>
+        <text id="acTemp" x="150" y="43" font-size="9" fill="#38bdf8" text-anchor="middle" font-family="sans-serif">20°</text>
         <circle cx="130" cy="39" r="2" fill="#22c55e" id="dispDot"/>
         <line x1="30" y1="65" x2="170" y2="65" stroke="var(--wm-divider, #e2e8f0)" stroke-width="1"/>
 
@@ -1739,7 +1739,19 @@ _svgAirco(u) {
                 auto: "Automatisch",
                 off: "Uit"
             };
-            this._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
+            tthis._el("stState").textContent = climMap[climState] || WashingMachineCard.capitalize(climState, t.locale);
+
+            // 2. Zet de juiste animatie-klassen op de kaart (voor de klep en kleurtjes)
+            const cardContainer = this.shadowRoot.querySelector(".card"); // of de hoofdcontainer van je kaart
+            if (cardContainer) {
+                cardContainer.classList.remove("mode-cool", "mode-heat", "mode-dry", "mode-fan_only", "mode-auto", "ac-on", "ac-off");
+                if (climState === "off") {
+                    cardContainer.classList.add("ac-off");
+                } else {
+                    cardContainer.classList.add("ac-on", `mode-${climState}`);
+                }
+            }
+        }
         } else if (c.show_raw_status && !WashingMachineCard.isBooleanStatusEntity(c.status_entity)) {
             const rawState = status ? String(status.state) : "";
             const capitalizedRaw = WashingMachineCard.capitalize(rawState, t.locale);
