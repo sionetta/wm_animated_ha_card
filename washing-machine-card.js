@@ -1190,32 +1190,6 @@ _svgAirco(u) {
         // 1. HTML inladen
         root.innerHTML = `
           <style>
-            /* stijlen... */
-          </style>
-          <ha-card>
-            <div class="wrap idle" id="wrap">
-              <!-- HTML inhoud -->
-            </div>
-          </ha-card>
-        `;
-        this._el = (id) => root.getElementById(id);
-
-        // Event listeners koppelen
-        const mainCard = root.querySelector(".wrap") || root.firstElementChild;
-        if (mainCard && c.climate_entity) {
-            mainCard.style.cursor = "pointer";
-            mainCard.onclick = () => {
-                const event = new Event("hass-more-info", {
-                    bubbles: true,
-                    composed: true
-                });
-                event.detail = { entityId: c.climate_entity };
-                this.dispatchEvent(event);
-            };
-        }
-        const sections = WashingMachineCardEditor._sections;
-    
-      <style>
         :host {
           display: block;
           --wm-grad: linear-gradient(180deg, #edf3fb 0%, #e4edf8 55%, #dfe9f6 100%);
@@ -1675,7 +1649,24 @@ _svgAirco(u) {
         </div>
       </ha-card>
     `;
+ </style>
 
+
+
+        // Event listeners koppelen
+        const mainCard = root.querySelector(".wrap") || root.firstElementChild;
+        if (mainCard && c.climate_entity) {
+            mainCard.style.cursor = "pointer";
+            mainCard.onclick = () => {
+                const event = new Event("hass-more-info", {
+                    bubbles: true,
+                    composed: true
+                });
+                event.detail = { entityId: c.climate_entity };
+                this.dispatchEvent(event);
+            };
+        }
+        const sections = WashingMachineCardEditor._sections;  
         this._el = (id) => root.getElementById(id);
 
         const mi = (ent) => () => this._moreInfo(ent);
