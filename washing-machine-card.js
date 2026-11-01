@@ -289,11 +289,13 @@ class WashingMachineCard extends HTMLElement {
         this._uid = `a${Math.random().toString(36).slice(2, 9)}`;
         this._built = false;
 
-        if (this._hass) {
+       if (this.shadowRoot) {
             this._build();
-            this._update();
+            if (this._hass) {
+                this._update();
+            }
         }
-    }  
+    } 
 
     set hass(hass) { // <--- Hier 4 spaties inspringen zodat het in de klasse valt!
         this._hass = hass;
