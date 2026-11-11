@@ -313,6 +313,12 @@ class WashingMachineCard extends HTMLElement {
         // but continuously scale it down to fit narrower dashboard columns.
         const scale = Math.min(1, width / 600);
         this.style.setProperty("--wm-scale", scale.toFixed(4));
+        // A transform does not participate in normal document flow. Keep the
+        // custom-element host at the visually scaled height to avoid a gap.
+        const card = this.shadowRoot?.querySelector("ha-card");
+        if (card) {
+            this.style.height = `${card.offsetHeight * scale}px`;
+        }
     }
 
     _observeWidth() {
@@ -1220,7 +1226,8 @@ class WashingMachineCard extends HTMLElement {
           display: block;
           box-sizing: border-box;
           width: calc(100% / var(--wm-scale));
-          zoom: var(--wm-scale);
+          transform: scale(var(--wm-scale));
+          transform-origin: top left;
           border-radius: 24px;
           padding: 16px 16px 14px;
           overflow: hidden;
