@@ -211,6 +211,7 @@ class WashingMachineCard extends HTMLElement {
         show_raw_status: false,
         confirm_plug_off: true,
         duration_format: "minutes",
+        font_size: "normal",
     };
 
     static get DEFAULT_RUNNING_STATES() {
@@ -311,14 +312,31 @@ class WashingMachineCard extends HTMLElement {
             return;
         // The card's unscaled reference width is 600px. Never enlarge it,
         // but continuously scale it down to fit narrower dashboard columns.
-        const scale = Math.min(1, width / 600);
-        this.style.setProperty("--wm-scale", scale.toFixed(4));
-        // A transform does not participate in normal document flow. Keep the
-        // custom-element host at the visually scaled height to avoid a gap.
+        this._scale = Math.min(1, width / 600);
+        this.style.setProperty("--wm-scale", this._scale.toFixed(4));
+        this._updateScaledHeight();
+    }
+
+    _updateScaledHeight() {
         const card = this.shadowRoot?.querySelector("ha-card");
-        if (card) {
-            this.style.height = `${card.offsetHeight * scale}px`;
-        }
+        if (!card)
+            return;
+        // Transforms do not affect document flow. Mirror the card's intrinsic
+        // (untransformed) height on the host so following dashboard cards
+        // start below the visually scaled card, including after content changes.
+        const scale = Number.isFinite(this._scale) ? this._scale : 1;
+        this.style.height = `${card.offsetHeight * scale}px`;
+    }
+
+    _observeCardSize() {
+        const card = this.shadowRoot?.querySelector("ha-card");
+        if (!card || typeof ResizeObserver === "undefined")
+            return;
+        if (this._cardResizeObserver)
+            this._cardResizeObserver.disconnect();
+        this._cardResizeObserver = new ResizeObserver(() => this._updateScaledHeight());
+        this._cardResizeObserver.observe(card);
+        this._updateScaledHeight();
     }
 
     _observeWidth() {
@@ -335,6 +353,7 @@ class WashingMachineCard extends HTMLElement {
 
     connectedCallback() {
         this._observeWidth();
+        this._observeCardSize();
         if (this._timer)
             clearInterval(this._timer);
         this._timer = setInterval(() => {
@@ -351,6 +370,10 @@ class WashingMachineCard extends HTMLElement {
         if (this._ro) {
             this._ro.disconnect();
             this._ro = null;
+        }
+        if (this._cardResizeObserver) {
+            this._cardResizeObserver.disconnect();
+            this._cardResizeObserver = null;
         }
     }
 
@@ -1250,20 +1273,20 @@ class WashingMachineCard extends HTMLElement {
         }
         .h-icon svg { width: 27px; height: 27px; }
         .h-title {
-          font-size: 17.5px; font-weight: 700; letter-spacing: .2px;
+          font-size: calc(var(--wm-font-scale, 1) * 17.5px); font-weight: 700; letter-spacing: .2px;
           flex: 0 1 auto; min-width: 56px;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .badge {
           display: flex; align-items: center; gap: 7px; flex-shrink: 0;
-          font-size: 11px; font-weight: 700; letter-spacing: .7px;
+          font-size: calc(var(--wm-font-scale, 1) * 11px); font-weight: 700; letter-spacing: .7px;
           padding: 6px 11px; border-radius: 999px;
           background: var(--wm-badge-bg); color: var(--wm-badge-fg); white-space: nowrap;
         }
         .wrap.narrow #badgeText { display: none; }
         .wrap.narrow .badge { padding: 6px 8px; }
         .wrap.narrow .header { gap: 8px; }
-        .wrap.narrow .h-title { font-size: 15.5px; }
+        .wrap.narrow .h-title { font-size: calc(var(--wm-font-scale, 1) * 15.5px); }
         .badge .b-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--wm-badge-dot); }
         .running .badge { background: var(--wm-badge-run-bg); color: var(--wm-badge-run-fg); }
         .state-idle .badge { background: var(--wm-badge-idle-bg); color: var(--wm-badge-idle-fg); }
@@ -1441,19 +1464,19 @@ class WashingMachineCard extends HTMLElement {
           position: absolute; inset: 0; display: flex; flex-direction: column;
           align-items: center; justify-content: center; text-align: center;
         }
-        .ring-time { font-size: 19px; font-weight: 800; line-height: 1; }
+        .ring-time { font-size: calc(var(--wm-font-scale, 1) * 19px); font-weight: 800; line-height: 1; }
         .ring-label {
-          font-size: 8px; font-weight: 700; letter-spacing: .8px; color: var(--wm-label);
+          font-size: calc(var(--wm-font-scale, 1) * 8px); font-weight: 700; letter-spacing: .8px; color: var(--wm-label);
           margin-top: 3px; max-width: 58px; overflow: hidden; white-space: nowrap;
         }
         .st-col { flex: 1; min-width: 0; }
-        .st-state { font-size: 16.5px; font-weight: 700; }
+        .st-state { font-size: calc(var(--wm-font-scale, 1) * 16.5px); font-weight: 700; }
         .st-row {
           display: flex; align-items: baseline; justify-content: space-between;
           margin-top: 9px; gap: 8px;
         }
-        .st-power-label { font-size: 13px; color: var(--wm-muted); }
-        .st-power { font-size: 18px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+        .st-power-label { font-size: calc(var(--wm-font-scale, 1) * 13px); color: var(--wm-muted); }
+        .st-power { font-size: calc(var(--wm-font-scale, 1) * 18px); font-weight: 800; white-space: nowrap; cursor: pointer; }
         .bar {
           height: 10px; border-radius: 6px; background: var(--wm-bar-bg);
           margin-top: 8px; overflow: hidden;
@@ -1466,7 +1489,7 @@ class WashingMachineCard extends HTMLElement {
         }
         .idle .bar-fill { background: var(--wm-bar-idle); }
         .lc-title {
-          font-size: 11px; font-weight: 800; letter-spacing: 1.4px; color: var(--wm-label);
+          font-size: calc(var(--wm-font-scale, 1) * 11px); font-weight: 800; letter-spacing: 1.4px; color: var(--wm-label);
           margin-bottom: 10px;
         }
         .lc-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
@@ -1475,9 +1498,9 @@ class WashingMachineCard extends HTMLElement {
           border-left: 1px solid var(--wm-divider);
           padding-left: 12px;
         }
-        .lc-label { font-size: 10px; font-weight: 700; letter-spacing: .8px; color: var(--wm-label); }
-        .lc-value { font-size: 14.5px; font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
-        .lc-unit { font-size: 11px; font-weight: 700; color: var(--wm-accent); }
+        .lc-label { font-size: calc(var(--wm-font-scale, 1) * 10px); font-weight: 700; letter-spacing: .8px; color: var(--wm-label); }
+        .lc-value { font-size: calc(var(--wm-font-scale, 1) * 14.5px); font-weight: 800; margin-top: 5px; overflow-wrap: break-word; }
+        .lc-unit { font-size: calc(var(--wm-font-scale, 1) * 11px); font-weight: 700; color: var(--wm-accent); }
         .hidden { display: none !important; }
       </style>
 
@@ -1586,8 +1609,17 @@ class WashingMachineCard extends HTMLElement {
             });
         }
 
+        const fontScale = ({
+            small: 0.9,
+            normal: 1,
+            large: 1.1,
+            extra_large: 1.2,
+        })[this._config.font_size] || 1;
+        this.style.setProperty("--wm-font-scale", String(fontScale));
+
         this._built = true;
         this._observeWidth();
+        this._observeCardSize();
         const w0 = this.getBoundingClientRect().width;
         if (w0)
             this._applyScale(w0);
@@ -1951,6 +1983,30 @@ class WashingMachineCardEditor extends HTMLElement {
                                         label: "Home Assistant (native colours)"
                                     },
                                 ],
+                            },
+                        },
+                    }, {
+                        key: "font_size",
+                        kind: "select",
+                        title: "Font size",
+                        required: true,
+                        default: D.font_size,
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: [{
+                                    value: "small",
+                                    label: "Small"
+                                }, {
+                                    value: "normal",
+                                    label: "Normal"
+                                }, {
+                                    value: "large",
+                                    label: "Large"
+                                }, {
+                                    value: "extra_large",
+                                    label: "Extra large"
+                                }],
                             },
                         },
                     }, {
