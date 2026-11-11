@@ -306,6 +306,15 @@ class WashingMachineCard extends HTMLElement {
         };
     }
 
+    _applyScale(width) {
+        if (!width || !Number.isFinite(width))
+            return;
+        // The card's unscaled reference width is 600px. Never enlarge it,
+        // but continuously scale it down to fit narrower dashboard columns.
+        const scale = Math.min(1, width / 600);
+        this.style.setProperty("--wm-scale", scale.toFixed(4));
+    }
+
     _observeWidth() {
         if (this._ro || typeof ResizeObserver === "undefined")
             return;
@@ -313,11 +322,7 @@ class WashingMachineCard extends HTMLElement {
             const w = entries[0]?.contentRect?.width;
             if (!w || !this._built)
                 return;
-            const wrap = this._el("wrap");
-            if (!wrap)
-                return;
-            wrap.classList.toggle("narrow", w <= 430);
-            wrap.classList.toggle("xnarrow", w <= 320);
+            this._applyScale(w);
         });
         this._ro.observe(this);
     }
@@ -1106,6 +1111,7 @@ class WashingMachineCard extends HTMLElement {
       <style>
         :host {
           display: block;
+          --wm-scale: 1;
           --wm-grad: linear-gradient(180deg, #edf3fb 0%, #e4edf8 55%, #dfe9f6 100%);
           --wm-text: #1c2733;
           --wm-muted: #7d8894;
@@ -1212,6 +1218,9 @@ class WashingMachineCard extends HTMLElement {
         }
         ha-card {
           display: block;
+          box-sizing: border-box;
+          width: calc(100% / var(--wm-scale));
+          zoom: var(--wm-scale);
           border-radius: 24px;
           padding: 16px 16px 14px;
           overflow: hidden;
@@ -1573,11 +1582,8 @@ class WashingMachineCard extends HTMLElement {
         this._built = true;
         this._observeWidth();
         const w0 = this.getBoundingClientRect().width;
-        if (w0) {
-            const wrap = this._el("wrap");
-            wrap.classList.toggle("narrow", w0 <= 430);
-            wrap.classList.toggle("xnarrow", w0 <= 320);
-        }
+        if (w0)
+            this._applyScale(w0);
     }
 
     _update() {
