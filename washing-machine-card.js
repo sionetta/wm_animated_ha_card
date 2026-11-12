@@ -211,7 +211,7 @@ class WashingMachineCard extends HTMLElement {
         show_raw_status: false,
         confirm_plug_off: true,
         duration_format: "minutes",
-        font_size: "normal",
+        font_size: 170,
     };
 
     static get DEFAULT_RUNNING_STATES() {
@@ -1609,12 +1609,8 @@ class WashingMachineCard extends HTMLElement {
             });
         }
 
-        const fontScale = ({
-            small: 0.9,
-            normal: 1.15,
-            large: 1.4,
-            extra_large: 1.7,
-        })[this._config.font_size] || 1;
+        const fontPercent = Number(this._config.font_size ?? WashingMachineCard.DEFAULTS.font_size);
+        const fontScale = Math.max(50, Math.min(250, Number.isFinite(fontPercent) ? fontPercent : 170)) / 100;
         this.style.setProperty("--wm-font-scale", String(fontScale));
 
         this._built = true;
@@ -1987,28 +1983,12 @@ class WashingMachineCardEditor extends HTMLElement {
                         },
                     }, {
                         key: "font_size",
-                        kind: "select",
-                        title: "Font size",
-                        required: true,
+                        kind: "number",
+                        title: "Font size (%)",
+                        description: "Set the font size as a percentage. Allowed range: 50–250%.",
                         default: D.font_size,
-                        selector: {
-                            select: {
-                                mode: "dropdown",
-                                options: [{
-                                    value: "small",
-                                    label: "Small"
-                                }, {
-                                    value: "normal",
-                                    label: "Normal"
-                                }, {
-                                    value: "large",
-                                    label: "Large"
-                                }, {
-                                    value: "extra_large",
-                                    label: "Extra large"
-                                }],
-                            },
-                        },
+                        min: 50,
+                        step: 5,
                     }, {
                         key: "duration_format",
                         kind: "select",
