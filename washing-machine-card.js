@@ -1988,6 +1988,7 @@ class WashingMachineCardEditor extends HTMLElement {
                         description: "Set the font size as a percentage. Allowed range: 50–250%.",
                         default: D.font_size,
                         min: 50,
+                        max: 250,
                         step: 5,
                     }, {
                         key: "duration_format",
@@ -2400,6 +2401,8 @@ class WashingMachineCardEditor extends HTMLElement {
             input.type = field.kind === "number" ? "number" : "text";
             if (field.kind === "number" && field.min !== undefined)
                 input.min = String(field.min);
+            if (field.kind === "number" && field.max !== undefined)
+                input.max = String(field.max);
             if (field.kind === "number" && field.step !== undefined)
                 input.step = String(field.step);
             input.addEventListener("input", () => {
@@ -2597,7 +2600,10 @@ class WashingMachineCardEditor extends HTMLElement {
             v = undefined;
         } else if (field.kind === "number") {
             const n = parseFloat(trimmed);
-            v = isNaN(n) ? undefined : n;
+            v = isNaN(n) ? undefined : Math.max(
+                field.min ?? -Infinity,
+                Math.min(field.max ?? Infinity, n)
+            );
         } else {
             v = trimmed;
         }
