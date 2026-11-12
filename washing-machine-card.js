@@ -1611,9 +1611,9 @@ class WashingMachineCard extends HTMLElement {
 
         const fontScale = ({
             small: 0.9,
-            normal: 1,
-            large: 1.1,
-            extra_large: 1.2,
+            normal: 1.15,
+            large: 1.4,
+            extra_large: 1.7,
         })[this._config.font_size] || 1;
         this.style.setProperty("--wm-font-scale", String(fontScale));
 
