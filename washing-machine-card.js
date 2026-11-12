@@ -314,6 +314,13 @@ class WashingMachineCard extends HTMLElement {
         // but continuously scale it down to fit narrower dashboard columns.
         this._scale = Math.min(1, width / 600);
         this.style.setProperty("--wm-scale", this._scale.toFixed(4));
+
+        const fontPercent = Number(this._config?.font_size ?? WashingMachineCard.DEFAULTS.font_size);
+        const configuredScale = Math.max(50, Math.min(250, Number.isFinite(fontPercent) ? fontPercent : 170)) / 100;
+        // The configured percentage is a visual target at a narrow mobile card
+        // width. Compensate for the card transform on wider dashboard columns.
+        const responsiveFontScale = configuredScale * Math.min(1, 240 / width);
+        this.style.setProperty("--wm-font-scale", responsiveFontScale.toFixed(4));
         this._updateScaledHeight();
     }
 
@@ -1298,13 +1305,15 @@ class WashingMachineCard extends HTMLElement {
         }
         .h-spacer { flex: 1; }
         .h-btn {
-          width: 35px; height: 35px; border-radius: 12px; flex-shrink: 0;
+          width: calc(35px * var(--wm-font-scale, 1));
+          height: calc(35px * var(--wm-font-scale, 1));
+          border-radius: calc(12px * var(--wm-font-scale, 1)); flex-shrink: 0;
           background: var(--wm-btn-bg); border: 1px solid var(--wm-btn-border);
           display: flex; align-items: center; justify-content: center;
           cursor: pointer; color: var(--wm-muted); transition: transform .12s ease;
         }
         .h-btn:active { transform: scale(.94); }
-        .h-btn ha-icon { --mdc-icon-size: 19px; }
+        .h-btn ha-icon { --mdc-icon-size: calc(19px * var(--wm-font-scale, 1)); }
         .h-btn.on { color: var(--wm-accent); border-color: var(--wm-btn-on-border); background: var(--wm-btn-on-bg); }
 
         .hero { display: flex; justify-content: center; padding: 14px 0 6px; }
@@ -1450,11 +1459,23 @@ class WashingMachineCard extends HTMLElement {
         .panel {
           background: var(--wm-panel-bg);
           border: 1px solid var(--wm-panel-border);
-          border-radius: 18px; padding: 14px 16px; margin-top: 12px;
+          border-radius: 18px;
+          padding: 14px 16px;
+          margin-top: 12px;
           box-shadow: var(--wm-panel-shadow);
         }
-        .status-panel { display: flex; align-items: center; gap: 16px; }
-        .ring-box { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+        .status-panel {
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          align-items: center;
+          gap: 14px;
+        }
+        .ring-box {
+          position: relative;
+          width: calc(60px * var(--wm-font-scale, 1));
+          height: calc(60px * var(--wm-font-scale, 1));
+          flex-shrink: 0;
+        }
         .ring-box svg { width: 100%; height: 100%; }
         .ring-track { stroke: var(--wm-ring-track); }
         .ring-arc   { stroke: var(--wm-accent); stroke-linecap: round; }
@@ -1469,17 +1490,25 @@ class WashingMachineCard extends HTMLElement {
           font-size: calc(var(--wm-font-scale, 1) * 8px); font-weight: 700; letter-spacing: .8px; color: var(--wm-label);
           margin-top: 3px; max-width: 58px; overflow: hidden; white-space: nowrap;
         }
-        .st-col { flex: 1; min-width: 0; }
-        .st-state { font-size: calc(var(--wm-font-scale, 1) * 16.5px); font-weight: 700; }
+        .st-col { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+        .st-state {
+          font-size: calc(var(--wm-font-scale, 1) * 16.5px);
+          font-weight: 750;
+          line-height: 1.2;
+          margin-bottom: 2px;
+        }
         .st-row {
           display: flex; align-items: baseline; justify-content: space-between;
-          margin-top: 9px; gap: 8px;
+          margin-top: 7px; gap: 10px;
         }
         .st-power-label { font-size: calc(var(--wm-font-scale, 1) * 13px); color: var(--wm-muted); }
         .st-power { font-size: calc(var(--wm-font-scale, 1) * 18px); font-weight: 800; white-space: nowrap; cursor: pointer; }
         .bar {
-          height: 10px; border-radius: 6px; background: var(--wm-bar-bg);
-          margin-top: 8px; overflow: hidden;
+          height: 6px;
+          border-radius: 999px;
+          background: var(--wm-bar-bg);
+          margin-top: 10px;
+          overflow: hidden;
         }
         .bar-fill {
           height: 100%; border-radius: 6px; width: 0%;
@@ -1608,10 +1637,6 @@ class WashingMachineCard extends HTMLElement {
                 }
             });
         }
-
-        const fontPercent = Number(this._config.font_size ?? WashingMachineCard.DEFAULTS.font_size);
-        const fontScale = Math.max(50, Math.min(250, Number.isFinite(fontPercent) ? fontPercent : 170)) / 100;
-        this.style.setProperty("--wm-font-scale", String(fontScale));
 
         this._built = true;
         this._observeWidth();
